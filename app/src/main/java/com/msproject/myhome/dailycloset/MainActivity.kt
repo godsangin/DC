@@ -1,6 +1,7 @@
 package com.msproject.myhome.dailycloset
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var weeklyBt: Button
     lateinit var sharedPreferences: SharedPreferences
     final val PICK_FROM_ALBUM = 200
+    val REQUEST_CAMERA = 100
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,12 +47,6 @@ class MainActivity : AppCompatActivity() {
         localDate = LocalDate()
         calendarFragment = CalendarFragment()
         galleryFragment = GalleryFragment(this)
-        calendarBt.setOnClickListener(View.OnClickListener {
-            fragmentTransaction = fragmentManager.beginTransaction()
-            fragmentTransaction.replace(R.id.container, calendarFragment)
-            fragmentTransaction.addToBackStack(null)
-            fragmentTransaction.commit()
-        })
         weeklyBt.setOnClickListener(View.OnClickListener {
             fragmentTransaction = fragmentManager.beginTransaction()
             fragmentTransaction.replace(R.id.container, galleryFragment)
@@ -89,11 +85,16 @@ class MainActivity : AppCompatActivity() {
         startActivityForResult(intent, PICK_FROM_ALBUM)
     }
 
+    @SuppressLint("MissingSuperCall")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if(requestCode == PICK_FROM_ALBUM){
             var photoUri: Uri? = data!!.data
             lateinit var cursor: Cursor
 
         }
+    }
+
+    fun getCameraCode(): Int{
+        return REQUEST_CAMERA
     }
 }

@@ -41,8 +41,6 @@ public class PlannerView  extends ConstraintLayout {
 
     Context context;
 
-    Button notificationButton;
-
     Button calendarSelectButton;
 
     boolean isExistToday;
@@ -52,6 +50,7 @@ public class PlannerView  extends ConstraintLayout {
     Button nextButton;
 
     LocalDate date;
+    private TakePictureDialog takePictureDialog;
 
 
 
@@ -72,6 +71,7 @@ public class PlannerView  extends ConstraintLayout {
         this.date = localDate;
         removeAllViews();
         this.isExistToday = false;
+        takePictureDialog = new TakePictureDialog(context);
 
         String infService = Context.LAYOUT_INFLATER_SERVICE;
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(infService);
@@ -81,7 +81,7 @@ public class PlannerView  extends ConstraintLayout {
 
 
 
-        todayButton = view.findViewById(R.id.calendar_today_bt);
+                todayButton = view.findViewById(R.id.calendar_today_bt);
         todayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -129,7 +129,10 @@ public class PlannerView  extends ConstraintLayout {
             calendarSelectView.setOnClickListener(new View.OnClickListener() { // 검은배경 클릭시
                 @Override
                 public void onClick(View view) {
-
+                    calendarSelectView.animate().alpha(0.0f);
+                    calendarSelectView.setVisibility(View.GONE);
+                    isCalendarSelectClicked = false;
+                    calendarSelectButton.setVisibility(View.GONE);
                 }
             });
 
@@ -155,7 +158,6 @@ public class PlannerView  extends ConstraintLayout {
                     if(!isCalendarSelectClicked) {
                         isCalendarSelectClicked = true;
 
-                        notificationButton.setVisibility(View.GONE);
                         calendarSelectButton.setVisibility(View.VISIBLE);
 
                         calendarSelectView.setVisibility(View.VISIBLE);
@@ -175,8 +177,6 @@ public class PlannerView  extends ConstraintLayout {
                         calendarSelectView.animate().alpha(0.0f);
                         calendarSelectView.setVisibility(View.GONE);
                         isCalendarSelectClicked = false;
-
-                        notificationButton.setVisibility(View.VISIBLE);
                         calendarSelectButton.setVisibility(View.GONE);
                     }
                 }
@@ -290,6 +290,9 @@ public class PlannerView  extends ConstraintLayout {
                 @Override
                 public void onClick(View view) {
 //                    MainActivity.changeFragmentDaily(viewHolder.getLocalDate());
+                    takePictureDialog = new TakePictureDialog(context);
+                    takePictureDialog.setDate(viewHolder.getLocalDate());
+                    takePictureDialog.show();
                 }
             };
 

@@ -3,20 +3,20 @@ package com.msproject.myhome.dailycloset;
 import org.joda.time.LocalDate;
 
 public class Picture {
-    LocalDate localDate;
+    String fileName;
     String imgURL;
 
-    public Picture(LocalDate localDate, String imgURL){
-        this.localDate = localDate;
+    public Picture(String fileName, String imgURL) {
+        this.fileName = fileName;
         this.imgURL = imgURL;
     }
 
-    public LocalDate getLocalDate() {
-        return localDate;
+    public String getFileName() {
+        return fileName;
     }
 
-    public void setLocalDate(LocalDate localDate) {
-        this.localDate = localDate;
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public String getImgURL() {
