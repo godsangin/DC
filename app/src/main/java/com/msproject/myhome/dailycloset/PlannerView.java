@@ -3,6 +3,7 @@ package com.msproject.myhome.dailycloset;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Environment;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -26,6 +27,7 @@ import androidx.viewpager.widget.ViewPager;
 import org.joda.time.LocalDate;
 
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Map;
@@ -50,7 +52,6 @@ public class PlannerView  extends ConstraintLayout {
     Button nextButton;
 
     LocalDate date;
-    private TakePictureDialog takePictureDialog;
 
 
 
@@ -69,9 +70,9 @@ public class PlannerView  extends ConstraintLayout {
 
     public void initView(final LocalDate localDate, final CalendarFragment plannerFragment) {
         this.date = localDate;
+
         removeAllViews();
         this.isExistToday = false;
-        takePictureDialog = new TakePictureDialog(context);
 
         String infService = Context.LAYOUT_INFLATER_SERVICE;
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(infService);
@@ -81,7 +82,7 @@ public class PlannerView  extends ConstraintLayout {
 
 
 
-                todayButton = view.findViewById(R.id.calendar_today_bt);
+        todayButton = view.findViewById(R.id.calendar_today_bt);
         todayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -227,6 +228,7 @@ public class PlannerView  extends ConstraintLayout {
             View view = LayoutInflater.from(context).inflate(R.layout.planner_recyclerview, null);
 
             RecyclerView recyclerView = view.findViewById(R.id.calendar_recyclerview);
+
             recyclerView.setLayoutManager(new GridLayoutManager(context, 7, LinearLayoutManager.VERTICAL, false));
             recyclerView.setAdapter(new CalendarRecyclerViewAdapter(minDate.plusMonths(position)));
             container.addView(view);
@@ -261,9 +263,11 @@ public class PlannerView  extends ConstraintLayout {
         LocalDate previousCalendar;
         LocalDate nextCalendar;
 
-        ImageView eventExist;
-
+        FileSaveNotifyListener fileSaveNotifyListener;
         Context mContext;
+        CalendarRecyclerViewAdapter thisAdapter;
+
+        private TakePictureDialog takePictureDialog;
 
         public CalendarRecyclerViewAdapter(LocalDate localDate) {
             this.calendar = localDate;
@@ -271,8 +275,8 @@ public class PlannerView  extends ConstraintLayout {
             this.lastDay = this.calendar.toDateTimeAtStartOfDay().dayOfMonth().withMaximumValue().getDayOfWeek() == 7 ? 0 : this.calendar.toDateTimeAtStartOfDay().dayOfMonth().withMaximumValue().getDayOfWeek(); // 마지막날 요일(일요일은 7)
             this.calendarCount = this.calendar.dayOfMonth().withMaximumValue().getDayOfMonth();
             this.count = startDay + (6 - lastDay) + this.calendarCount;
-
             this.plusCount = 0;
+
         }
 
 
@@ -283,14 +287,17 @@ public class PlannerView  extends ConstraintLayout {
             View view = LayoutInflater.from(context).inflate(R.layout.planner_item, parent, false);//임시
             view.setLayoutParams(new LinearLayout.LayoutParams(parent.getWidth() / 7, parent.getHeight() / (this.count / 7)));
             final ViewHolder viewHolder = new ViewHolder(view);
-            eventExist = view.findViewById(R.id.event_exist);//이벤트가 있으면 visible = true
-
 
             View.OnClickListener listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-//                    MainActivity.changeFragmentDaily(viewHolder.getLocalDate());
-                    takePictureDialog = new TakePictureDialog(context);
+                    fileSaveNotifyListener = new FileSaveNotifyListener() {
+                        @Override
+                        public void notifyDatasetChanged() {
+                            viewHolder.eventExist.setVisibility(View.VISIBLE);
+                        }
+                    };
+                    takePictureDialog = new TakePictureDialog(context, fileSaveNotifyListener);
                     takePictureDialog.setDate(viewHolder.getLocalDate());
                     takePictureDialog.show();
                 }
@@ -340,23 +347,16 @@ public class PlannerView  extends ConstraintLayout {
 
                 }
                 if (isExistToday(this.calendar)) {
-                    viewHolder.dateText.setBackgroundResource(R.drawable.ic_brightness_1_black_16dp);
+                    viewHolder.dateText.setBackgroundResource(R.color.colorToday);
                     viewHolder.dateText.setTextColor(Color.parseColor("#ffffff"));
                     isExistToday = true;
                 }
 
+                File file = new File(Environment.getExternalStorageDirectory()+"/Pictures/DailyCloset", convertFileName(viewHolder.getLocalDate()) + ".jpg");
 
-                LocalDate today = viewHolder.getLocalDate();
-                SimpleDateFormat format = new SimpleDateFormat("yy.MM.dd");
-
-                String key = format.format(today.toDate());
-//                viewHolder.adapter.notifyDataSetChanged();
-                String todayEvent = mContext.getSharedPreferences("EVENT", Context.MODE_PRIVATE).getString(key, "");
-
-                if(!todayEvent.equals("")){
-                    eventExist.setVisibility(View.VISIBLE);
+                if(file.canRead()){
+                    viewHolder.eventExist.setVisibility(View.VISIBLE);
                 }
-
 
                 this.calendar = this.calendar.plusDays(1);
             }
@@ -370,12 +370,12 @@ public class PlannerView  extends ConstraintLayout {
         public class ViewHolder extends RecyclerView.ViewHolder {
             TextView dateText;
             LocalDate localDate;
-            ListView dateListView;
+            ImageView eventExist;
 
             public ViewHolder(View itemView) {
                 super(itemView);
                 dateText = itemView.findViewById(R.id.planner_item_day);
-
+                eventExist = itemView.findViewById(R.id.event_exist);
             }
 
             public void setLocalDate(LocalDate localDate) {
@@ -385,6 +385,10 @@ public class PlannerView  extends ConstraintLayout {
             public LocalDate getLocalDate() {
                 return this.localDate;
             }
+        }
+        public String convertFileName(LocalDate date){
+            String str = date.toString("yyyyMMdd");
+            return str;
         }
 
     }

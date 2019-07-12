@@ -12,7 +12,7 @@
             android:text="2019.07.01"
             android:background="@color/colorPrimary"
             android:padding="8dp"
-            android:textColor="#fff"/>
+            android:textColor="@color/colorPrimaryDark"/>
     <LinearLayout
             android:id="@+id/convert_container"
             app:layout_constraintTop_toBottomOf="@+id/date_text"
@@ -28,6 +28,7 @@
         </TextureView>
         <ImageView
                 android:id="@+id/imageview"
+                android:scaleType="center"
                 android:layout_width="match_parent" android:layout_height="match_parent"
                 android:visibility="gone"
         />
@@ -42,25 +43,58 @@
     app:layout_constraintBottom_toBottomOf="@id/convert_container"
     app:layout_constraintLeft_toLeftOf="parent"
     app:layout_constraintRight_toRightOf="parent"/>
+    <ImageView
+            android:id="@+id/rotate_bt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:layout_margin="12dp"
+            android:tint="@color/colorPrimary"
+            app:layout_constraintTop_toTopOf="@+id/convert_container"
+            app:layout_constraintLeft_toLeftOf="@id/convert_container"
+            app:layout_constraintRight_toRightOf="@id/convert_container"
+            android:src="@drawable/ic_repeat_black_24dp"
+            />
     <LinearLayout
             android:id="@+id/flow_after_view"
             app:layout_constraintTop_toBottomOf="@id/convert_container"
-            android:layout_width="match_parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:padding="8dp"
+            android:layout_width="350dp"
             android:layout_height="50dp"
-            android:orientation="horizontal"
-    android:visibility="gone">
+            android:visibility="gone"
+            android:orientation="horizontal">
+        <LinearLayout android:layout_width="0dp"
+                      android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+        android:gravity="center">
+            <Button
+                    android:id="@+id/retake_bt"
+                    android:layout_width="150dp"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/button_background"
+                    android:textColor="#737378"
+                    android:textStyle="bold"
+                    android:text="다시찍기"/>
+        </LinearLayout>
 
-        <Button
-                android:id="@+id/retake_bt"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="다시찍기"/>
-        <Button
-                android:id="@+id/save_bt"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:text="저장"/>
+        <LinearLayout android:layout_width="0dp"
+                      android:id="@+id/close_container"
+                      android:layout_height="match_parent"
+                      android:layout_weight="1"
+                      android:orientation="vertical"
+                      android:gravity="center">
+            <Button
+                    android:id="@+id/close_bt"
+                    android:layout_width="150dp"
+                    android:layout_height="match_parent"
+                    android:textColor="#737378"
+                    android:background="@drawable/button_background"
+                    android:textStyle="bold"
+                    android:text="닫기"/>
+        </LinearLayout>
+
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>
