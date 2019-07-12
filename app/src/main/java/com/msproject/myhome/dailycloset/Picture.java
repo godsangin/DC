@@ -5,6 +5,7 @@ import org.joda.time.LocalDate;
 public class Picture {
     String fileName;
     String imgURL;
+    boolean favorite;
 
     public Picture(String fileName, String imgURL) {
         this.fileName = fileName;
@@ -25,5 +26,13 @@ public class Picture {
 
     public void setImgURL(String imgURL) {
         this.imgURL = imgURL;
+    }
+
+    public boolean isFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
     }
 }

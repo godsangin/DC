@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "265433190763",
+    "firebase_url": "https://dailycloset.firebaseio.com",
+    "project_id": "dailycloset",
+    "storage_bucket": "dailycloset.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:265433190763:android:f3ac4c545ed946af",
+        "android_client_info": {
+          "package_name": "com.msproject.myhome.dailycloset"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "265433190763-fem5v5kr9pd8650durl1l8j5f5urnf30.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDy6a97TugZ26HDOUskrh2_oi0fa_2RR0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "265433190763-fem5v5kr9pd8650durl1l8j5f5urnf30.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

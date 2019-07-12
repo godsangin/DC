@@ -4,7 +4,9 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.ImageFormat;
+import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.*;
 import android.hardware.camera2.params.StreamConfigurationMap;
@@ -16,6 +18,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
 import android.util.Size;
+import android.util.SparseIntArray;
 import android.view.Surface;
 import android.view.TextureView;
 import android.widget.Toast;
@@ -42,6 +45,16 @@ public class Preview extends Thread {
     private TextureView mTextureView;
     private String fileName;
     final int REQUEST_CAMERACODE = 100;
+    private int sensorOrientation;
+    private String cameraID;
+    private static final SparseIntArray ORIENTATIONS = new SparseIntArray(4);
+    static {
+        ORIENTATIONS.append(Surface.ROTATION_0, 90);
+        ORIENTATIONS.append(Surface.ROTATION_90, 0);
+        ORIENTATIONS.append(Surface.ROTATION_180, 270);
+        ORIENTATIONS.append(Surface.ROTATION_270, 180);
+    }
+    CameraCharacteristics mCameraCharateristics;
     File file;
 
     public Preview(Context context, TextureView textureView, String fileName) {
@@ -49,6 +62,8 @@ public class Preview extends Thread {
         mTextureView = textureView;
         this.fileName = fileName;
         file = new File(Environment.getExternalStorageDirectory()+"/Pictures/DailyCloset", fileName + ".jpg");
+        CameraManager manager = (CameraManager) mContext.getSystemService(Context.CAMERA_SERVICE);
+        cameraID = getBackFacingCameraId(manager);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -70,16 +85,31 @@ public class Preview extends Thread {
         CameraManager manager = (CameraManager) mContext.getSystemService(Context.CAMERA_SERVICE);
         Log.e(TAG, "openCamera E");
         try {
-            String cameraId = getBackFacingCameraId(manager);
-            CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId);
+
+            String[] list = manager.getCameraIdList();
+            for(String s:list){
+                Log.d("cameraIDList==", s);
+            }
+            CameraCharacteristics characteristics1 = manager.getCameraCharacteristics("1");
+            StreamConfigurationMap map1 = characteristics1.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+            Size[] mySize1 = map1.getOutputSizes(SurfaceTexture.class);
+            for(Size s: mySize1){
+                Log.d("size== width:", s.getWidth() + " height: " + s.getHeight());
+            }
+            CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraID);
+            mCameraCharateristics = characteristics;
             StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-            mPreviewSize = map.getOutputSizes(SurfaceTexture.class)[2];
+            //회전방향 구하기 위하여 센서 방향 측정
+            sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+            mPreviewSize = map.getOutputSizes(SurfaceTexture.class)[0];
+            Size[] mySize = map.getOutputSizes(SurfaceTexture.class);
+            mPreviewSize = mySize[2];
 
             int permissionCamera = ContextCompat.checkSelfPermission(mContext, Manifest.permission.CAMERA);
             if(permissionCamera == PackageManager.PERMISSION_DENIED) {
                 ActivityCompat.requestPermissions((Activity) mContext, new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERACODE);
             } else {
-                manager.openCamera(cameraId, mStateCallback, null);
+                manager.openCamera(cameraID, mStateCallback, null);
             }
         } catch (CameraAccessException e) {
             // TODO Auto-generated catch block
@@ -209,6 +239,25 @@ public class Preview extends Thread {
         }
     }
 
+    public void toggle(){
+        CameraManager manager = (CameraManager) mContext.getSystemService(Context.CAMERA_SERVICE);
+        String[] list = null;
+        try {
+            list = manager.getCameraIdList();
+        } catch (CameraAccessException e) {
+            e.printStackTrace();
+        }
+        if(list.length < 2){
+            return;
+        }
+        if(cameraID == "0"){
+            cameraID = "1";
+        }
+        else{
+            cameraID = "0";
+        }
+    }
+
     public void setSurfaceTextureListener()
     {
         mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
@@ -240,6 +289,7 @@ public class Preview extends Thread {
     }
 
 
+
     protected void takePicture() {
         if(null == mCameraDevice) {
             Log.e(TAG, "mCameraDevice is null, return");
@@ -259,9 +309,16 @@ public class Preview extends Thread {
             captureBuilder.addTarget(reader.getSurface());
             captureBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
 
-            // Orientation
+            //Device Orientation
             int rotation = ((Activity)mContext).getWindowManager().getDefaultDisplay().getRotation();
-//            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
+            int surfaceRotation = ORIENTATIONS.get(rotation);
+            int jpegOrientation = (surfaceRotation + sensorOrientation + 270) %  360;
+            if(cameraID.equals("1")){
+                captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, 270);
+            }
+            else{
+                captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, 90);
+            }
             File path = new File(Environment.getExternalStorageDirectory() + "/Pictures/DailyCloset");
             if(!path.exists()){
                 path.mkdir();
@@ -272,7 +329,8 @@ public class Preview extends Thread {
                 @Override
                 public void onImageAvailable(ImageReader reader) {
                     Image image = null;
-                    try {
+                    try{
+
                         image = reader.acquireLatestImage();
                         ByteBuffer buffer = image.getPlanes()[0].getBuffer();
                         byte[] bytes = new byte[buffer.capacity()];

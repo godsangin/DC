@@ -9,7 +9,7 @@
         android:id="@+id/calendar_top_layout"
         android:layout_width="0dp"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/colorPrimary"
+        android:background="@drawable/button_background"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
@@ -35,14 +35,14 @@
                     android:id="@+id/calendar_year_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#ffffff"
+                    android:textColor="@color/colorPrimaryDark"
                     android:text="2018"
                     android:textSize="20sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#ffffff"
+                    android:textColor="@color/colorPrimaryDark"
                     android:text=" 년"
                     android:textSize="20sp" />
             </LinearLayout>
@@ -56,14 +56,14 @@
                     android:id="@+id/calendar_month_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#ffffff"
+                    android:textColor="@color/colorPrimaryDark"
                     android:textSize="16sp"
                     android:text="11" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#ffffff"
+                    android:textColor="@color/colorPrimaryDark"
                     android:textSize="16sp"
                     android:text=" 월" />
 
@@ -79,7 +79,7 @@
             android:layout_marginRight="16dp"
             android:background="@android:color/transparent"
             android:text="확인"
-            android:textColor="#ffffff"
+            android:textColor="@color/colorPrimaryDark"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -92,7 +92,7 @@
             android:layout_marginLeft="16dp"
             android:background="@android:color/transparent"
             android:text="TODAY"
-            android:textColor="#ffffff"
+            android:textColor="@color/colorPrimaryDark"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -102,7 +102,7 @@
             android:id="@+id/calendar_previous_bt"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:background="@drawable/ic_keyboard_arrow_left_white_24dp"
+            android:background="@drawable/ic_keyboard_arrow_left_black_24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.3"
@@ -113,7 +113,7 @@
             android:id="@+id/calendar_next_bt"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:background="@drawable/ic_keyboard_arrow_right_white_24dp"
+            android:background="@drawable/ic_keyboard_arrow_right_black_24dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.7"

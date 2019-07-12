@@ -1,22 +1,31 @@
 package com.msproject.myhome.dailycloset
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.graphics.PorterDuff
+import android.media.ExifInterface
+import android.os.AsyncTask
 import android.os.Environment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 
 class GalleryAdapter(val context:Context, val pictureList:ArrayList<Picture>):
         RecyclerView.Adapter<GalleryAdapter.Holder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val view = LayoutInflater.from(context).inflate(R.layout.gallery_item, parent, false)
+        resetGlide()
         return Holder(view)
     }
 
@@ -31,6 +40,8 @@ class GalleryAdapter(val context:Context, val pictureList:ArrayList<Picture>):
     inner class Holder(itemView: View?) : RecyclerView.ViewHolder(itemView!!) {
         val myImageView = itemView?.findViewById<ImageView>(R.id.myImage)
         val myTextView = itemView?.findViewById<TextView>(R.id.myText)
+        val favoriteButton = itemView?.findViewById<ImageView>(R.id.favorite_bt)
+
 
         fun bind(picture: Picture, context: Context) {
             /* dogPhoto의 setImageResource에 들어갈 이미지의 id를 파일명(String)으로 찾고,
@@ -39,34 +50,58 @@ class GalleryAdapter(val context:Context, val pictureList:ArrayList<Picture>):
 //                val resourceId = context.resources.getIdentifier(dog.photo, "drawable", context.packageName)
 //                dogPhoto?.setImageResource(resourceId)
                 val start = System.currentTimeMillis()
-                val bm: Bitmap = decodeSampleBitmapFromResource(picture.getImgURL(), 250, 250)
-                myImageView?.setImageBitmap(bm)
+                myImageView?.let { Glide.with(context).load(picture.imgURL).into(it) }
+//                val bm: Bitmap = decodeSampleBitmapFromResource(picture.getImgURL(), 250, 250)
+//                myImageView?.setImageBitmap(bm)
                 Log.d("loadTime==", (System.currentTimeMillis() - start).toString())
             } else {
                 myImageView?.setImageResource(R.mipmap.ic_launcher)
             }
             /* 나머지 TextView와 String 데이터를 연결한다. */
             myTextView?.text = picture.getFileName().replace(".jpg", "")
-        }
-        fun decodeSampleBitmapFromResource(res: String, reqWidth: Int, reqHeight: Int): Bitmap {
-            var options: BitmapFactory.Options = BitmapFactory.Options()
-            options.inJustDecodeBounds = true;  // 이미지 로드하기 전에  이미지의 크기를 알기위해 true 로 설정 해둔다.
-            BitmapFactory.decodeFile(res, options)
-            //이미지를 로드하기 전에 해상도 값을 얻을 수 있다.
-            val height = options.outHeight
-            val width = options.outWidth
-            var inSampleSize = 1;
-            if (height > reqHeight || width > reqWidth) {//업로드할 이미지와 실제 필요한 이미지 비교를 통해 이미지 사이즈값을 얻는다.
-                val heightRatio = Math.round((height / reqHeight).toDouble())
-                val widthRatio = Math.round((width / reqWidth).toDouble())
-                inSampleSize = (if (heightRatio < widthRatio) heightRatio else widthRatio).toInt();
-            }
-            options.inSampleSize = inSampleSize;
-            options.inJustDecodeBounds = false; // 이미지 로드할 때는  다시 false로 설정한다.
-            return BitmapFactory.decodeFile(res, options) //해당 이미지 반환
+            val sp = context.getSharedPreferences("favorite", Context.MODE_PRIVATE)
+            val pastString = sp.getString("favorite", "")
+            Log.d("filereplace==", picture.fileName.replace("jpg",""))
+            Log.d("pastString==", pastString)
 
+            if (pastString?.contains(picture.fileName.replace(".jpg",""))!!){
+                picture.favorite = true
+            }
+            if(picture.favorite){
+                favoriteButton?.setImageResource(R.drawable.ic_star_yellow_24dp)
+            }
+            else{
+                favoriteButton?.setImageResource(R.drawable.ic_star_black_24dp)
+            }
+            favoriteButton?.setOnClickListener(View.OnClickListener {
+
+                val editor = sp.edit()
+                if(!picture.favorite && !pastString?.contains(picture.fileName.replace("jpg",""))!!){
+                    editor.putString("favorite", pastString + myTextView?.text.toString() + " ")
+                    editor.commit()
+                    favoriteButton.setImageResource(R.drawable.ic_star_yellow_24dp)
+                    picture.favorite = true
+                    Toast.makeText(context, "즐겨찾기에 추가되었습니다.", Toast.LENGTH_SHORT).show()
+                }
+                else{
+                    editor.putString("favorite", pastString?.replace(myTextView?.text.toString(), ""))
+                    editor.commit()
+                    favoriteButton.setImageResource(R.drawable.ic_star_black_24dp)
+                    picture.favorite = false
+                    Toast.makeText(context, "즐겨찾기에서 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+                }
+            })
         }
     }
+    private fun resetGlide(){
+        Glide.get(context).clearMemory()
+        MyAsyncTask().execute(1,2,3,4,5)
+    }
 
-
+    inner class MyAsyncTask: AsyncTask<Int, Void, Void>(){
+        override fun doInBackground(vararg p0: Int?): Void? {
+            Glide.get(context).clearDiskCache()
+            return null;
+        }
+    }
 }

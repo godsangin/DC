@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+            android:id="@+id/navigation_weather"
+            android:icon="@drawable/ic_sun"
+            android:title="날씨"/>
+    <item
+            android:id="@+id/navigation_date"
+            android:icon="@drawable/ic_date_range_gray_24dp"
+            android:title="날짜별" />
+
+    <item
+            android:id="@+id/navigation_picture"
+            android:icon="@drawable/ic_photo_camera_gray_24dp"
+            android:title="사진별" />
+
+    <item
+            android:id="@+id/navigation_setting"
+            android:icon="@drawable/ic_settings_gray_24dp"
+            android:title="설정" />
+
+
+</menu>
