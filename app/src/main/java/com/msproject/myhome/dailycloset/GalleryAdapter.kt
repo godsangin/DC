@@ -1,31 +1,25 @@
 package com.msproject.myhome.dailycloset
 
+import android.app.Activity
 import android.content.Context
-import android.content.SharedPreferences
-import android.content.res.Resources
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Matrix
-import android.graphics.PorterDuff
-import android.media.ExifInterface
+import android.graphics.Point
 import android.os.AsyncTask
 import android.os.Environment
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import java.io.File
 
 class GalleryAdapter(val context:Context, val pictureList:ArrayList<Picture>):
         RecyclerView.Adapter<GalleryAdapter.Holder>() {
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val view = LayoutInflater.from(context).inflate(R.layout.gallery_item, parent, false)
-        resetGlide()
+//        resetGlide()
         return Holder(view)
     }
 
@@ -41,19 +35,15 @@ class GalleryAdapter(val context:Context, val pictureList:ArrayList<Picture>):
         val myImageView = itemView?.findViewById<ImageView>(R.id.myImage)
         val myTextView = itemView?.findViewById<TextView>(R.id.myText)
         val favoriteButton = itemView?.findViewById<ImageView>(R.id.favorite_bt)
+        val removeButton = itemView?.findViewById<ImageView>(R.id.remove_bt)
 
 
         fun bind(picture: Picture, context: Context) {
             /* dogPhoto의 setImageResource에 들어갈 이미지의 id를 파일명(String)으로 찾고,
             이미지가 없는 경우 안드로이드 기본 아이콘을 표시한다.*/
-            if (picture.getImgURL() != "") {
-//                val resourceId = context.resources.getIdentifier(dog.photo, "drawable", context.packageName)
-//                dogPhoto?.setImageResource(resourceId)
-                val start = System.currentTimeMillis()
-                myImageView?.let { Glide.with(context).load(picture.imgURL).into(it) }
-//                val bm: Bitmap = decodeSampleBitmapFromResource(picture.getImgURL(), 250, 250)
-//                myImageView?.setImageBitmap(bm)
-                Log.d("loadTime==", (System.currentTimeMillis() - start).toString())
+            if (picture.getImgURL()!= null && !picture.getImgURL().equals("")) {
+                val imageDownloader = ImageDownloader(context)
+                imageDownloader.download(picture.getImgURL(), myImageView)
             } else {
                 myImageView?.setImageResource(R.mipmap.ic_launcher)
             }
@@ -91,6 +81,33 @@ class GalleryAdapter(val context:Context, val pictureList:ArrayList<Picture>):
                     Toast.makeText(context, "즐겨찾기에서 삭제되었습니다.", Toast.LENGTH_SHORT).show()
                 }
             })
+
+            removeButton?.setOnClickListener(View.OnClickListener {
+                val fileDeleteInteractionListener = object: FileDeleteInteractionListener {
+                    override fun deleteSucess(): Boolean {
+                        val file = File(picture.getImgURL())
+                        if(file.delete()){
+                            pictureList.remove(picture)
+                            notifyDataSetChanged()
+                            val editor = sp.edit()
+                            editor.putString("favorite", pastString?.replace(myTextView?.text.toString(), ""))
+                            editor.commit()
+                            return true
+                        }
+                        return false
+                    }
+                }
+                val dialog = DeletePictureDialog(context, fileDeleteInteractionListener)
+                dialog.show()
+                val display:Display = (context as Activity).windowManager.defaultDisplay
+                var size:Point = Point()
+                display.getSize(size)
+
+                val window = dialog.window as Window
+                val x = (size.x * 0.8f).toInt()
+                val y = (size.y * 0.3f).toInt()
+                window.setLayout(x, y)
+            })
         }
     }
     private fun resetGlide(){
@@ -103,5 +120,10 @@ class GalleryAdapter(val context:Context, val pictureList:ArrayList<Picture>):
             Glide.get(context).clearDiskCache()
             return null;
         }
+
+        override fun onPostExecute(result: Void?) {
+            super.onPostExecute(result)
+        }
     }
+
 }

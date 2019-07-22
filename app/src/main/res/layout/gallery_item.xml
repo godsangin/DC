@@ -14,7 +14,7 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/favorite_bt"
                 android:text="2019.06.27"
                 android:textSize="20sp"
                 android:padding="8dp"/>
@@ -24,9 +24,19 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:paddingLeft="12dp"
+                android:src="@drawable/ic_star_black_24dp"/>
+        <ImageView
+                android:id="@+id/remove_bt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 android:paddingRight="12dp"
-                android:src="@drawable/ic_star_black_24dp"/>
+                android:src="@drawable/ic_delete_forever_black_24dp"
+        />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout

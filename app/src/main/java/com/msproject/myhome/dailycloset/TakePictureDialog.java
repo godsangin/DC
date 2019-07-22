@@ -1,5 +1,6 @@
 package com.msproject.myhome.dailycloset;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -7,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.media.ExifInterface;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -28,6 +30,7 @@ public class TakePictureDialog extends Dialog {
     ImageView imageView;
     ImageView rotate_bt;
     TextView dateTextView;
+    TextView alert_text;
 
     Context context;
     LocalDate date;
@@ -62,6 +65,7 @@ public class TakePictureDialog extends Dialog {
         imageView = findViewById(R.id.imageview);
         dateTextView = findViewById(R.id.date_text);
         rotate_bt = findViewById(R.id.rotate_bt);
+        alert_text = findViewById(R.id.alert_text);
 
         file = new File(Environment.getExternalStorageDirectory()+"/Pictures/DailyCloset", convertFileName() + ".jpg");
         if(!file.canRead()){
@@ -97,6 +101,7 @@ public class TakePictureDialog extends Dialog {
         mCameraTextureView.setVisibility(View.VISIBLE);
         takeButton.setVisibility(View.VISIBLE);
         rotate_bt.setVisibility(View.VISIBLE);
+        alert_text.setVisibility(View.VISIBLE);
         mPreview = new Preview2(context, mCameraTextureView, convertFileName());
         mPreview.startBackgroundThread();
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -111,6 +116,7 @@ public class TakePictureDialog extends Dialog {
                     flowAfterView.setVisibility(View.VISIBLE);
                     closeButton.setVisibility(View.VISIBLE);
                     rotate_bt.setVisibility(View.GONE);
+                    alert_text.setVisibility(View.GONE);
                     findViewById(R.id.close_container).setVisibility(View.VISIBLE);
                     fileSaveNotifyListener.notifyDatasetChanged();
                 }
@@ -131,8 +137,6 @@ public class TakePictureDialog extends Dialog {
     private void startImageView(){
         imageView.setVisibility(View.VISIBLE);
         //회전각도에 따른 비율 설정
-        int degrees = getExifOrientation(file.getAbsolutePath());
-        Log.d("degree==", degrees + "");
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(file.getAbsolutePath(), options);
@@ -151,6 +155,7 @@ public class TakePictureDialog extends Dialog {
         flowAfterView.setVisibility(View.VISIBLE);
         closeButton.setVisibility(View.GONE);
         rotate_bt.setVisibility(View.GONE);
+        alert_text.setVisibility(View.GONE);
         findViewById(R.id.close_container).setVisibility(View.GONE);
     }
 
@@ -231,23 +236,6 @@ public class TakePictureDialog extends Dialog {
             }
         }
         return sampleSize;
-    }
-
-    private Bitmap getRotatedBitmap(Bitmap bitmap, int degrees) {
-        if (degrees != 0 && bitmap != null) {
-            Matrix m = new Matrix();
-            m.setRotate(degrees, (float) bitmap.getWidth() / 2, (float) bitmap.getHeight() / 2);
-            try {
-                Bitmap b2 = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
-                if (bitmap != b2) {
-                    bitmap.recycle();
-                    bitmap = b2;
-                }
-            } catch (OutOfMemoryError e) {
-                // 메모리 부족에러시, 원본을 반환
-            }
-        }
-        return bitmap;
     }
 
     private Bitmap rotateBitmap(Bitmap bitmap, String filepath){

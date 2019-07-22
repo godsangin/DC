@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
         bottomNavigationView.setOnNavigationItemSelectedListener(this)
         navigationView.findViewById<TextView>(R.id.navigation_text).setText("Weather")
         menu = bottomNavigationView.menu
-        myBottomNavigationInteractionListener = object :BottomNavigationInteractionListener{
+        myBottomNavigationInteractionListener = object : BottomNavigationInteractionListener {
             override fun setNavigationIcon(imageResourceId: Int) {
                 menu.findItem(R.id.navigation_weather).setIcon(imageResourceId)
             }
@@ -67,8 +67,13 @@ class MainActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
 
         getPermission()
 //        callPermission()  // 권한 요청을 해야 함
+        try {
+            if(Build.VERSION.SDK_INT != Build.VERSION_CODES.O){
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            }
+        } catch (ignore: IllegalStateException) {
 
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+        }
 
     }
     protected fun getPermission(){
@@ -89,8 +94,6 @@ class MainActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
 
     }
 
-
-
     override fun onNavigationItemSelected(p0: MenuItem): Boolean {
         when(p0.itemId){
             R.id.navigation_date ->{
@@ -110,7 +113,9 @@ class MainActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
             R.id.navigation_weather -> {
                 fragmentManager.popBackStack()
                 fragmentTransaction = fragmentManager.beginTransaction()
-                fragmentTransaction.replace(R.id.container, WeatherFragment.newInstance(myBottomNavigationInteractionListener))
+                val weatherFragment = WeatherFragment.newInstance()
+                weatherFragment.setBottomNavigationInteractionListener(myBottomNavigationInteractionListener)
+                fragmentTransaction.replace(R.id.container, weatherFragment)
                 fragmentTransaction.commit()
                 navigationView.findViewById<TextView>(R.id.navigation_text).setText("Weather")
             }
@@ -169,7 +174,9 @@ class MainActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
         }
         else{
             fragmentTransaction = fragmentManager.beginTransaction()
-            fragmentTransaction.replace(R.id.container, WeatherFragment.newInstance(myBottomNavigationInteractionListener))
+            val weatherFragment = WeatherFragment.newInstance()
+            weatherFragment.setBottomNavigationInteractionListener(myBottomNavigationInteractionListener)
+            fragmentTransaction.replace(R.id.container, weatherFragment)
             fragmentTransaction.commit()
         }
 

@@ -12,6 +12,8 @@ import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.kakao.adfit.ads.AdListener
+import com.kakao.adfit.ads.ba.BannerAdView
 import org.joda.time.LocalDate
 import java.io.File
 import java.util.*
@@ -25,6 +27,7 @@ class GalleryFragment : Fragment() {
     lateinit var searchButton:Button
     lateinit var searchText:EditText
     lateinit var ImageNotFoundView:ConstraintLayout
+    lateinit var adView:BannerAdView
     var viewCode:Int = 0;
 
 
@@ -34,7 +37,7 @@ class GalleryFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+        ): View? {
         // Inflate the layout for this fragment
         var view:View = inflater.inflate(R.layout.fragment_gallery, container, false)
         mRecyclerView = view.findViewById(R.id.gallery_recyclerview)
@@ -46,6 +49,22 @@ class GalleryFragment : Fragment() {
         setSearchListener()
         setRecyclerView()
 
+        adView = view.findViewById(R.id.adfit_adview)
+        adView.setClientId("DAN-tonyi5sd4vnd")
+        adView.setAdListener(object: AdListener{
+            override fun onAdFailed(p0: Int) {
+
+            }
+
+            override fun onAdClicked() {
+
+            }
+
+            override fun onAdLoaded() {
+
+            }
+        })
+        adView.loadAd()
         return view
     }
     fun convertFileName(date: LocalDate): String {
@@ -62,8 +81,16 @@ class GalleryFragment : Fragment() {
             for(file in fileList){
                 pictureList.add(Picture(file.name, file.absolutePath))
             }
+
         }
-        pictureList = pictureList.asReversed().toList() as ArrayList<Picture>
+        if(pictureList.size == 0){
+            ImageNotFoundView.visibility = View.VISIBLE
+        }
+        else{
+//            pictureList = pictureList.asReversed().toList() as ArrayList<Picture>
+            pictureList = ArrayList<Picture>(pictureList.asReversed().toList())
+            ImageNotFoundView.visibility = View.GONE
+        }
         val mAdapter = context?.let { GalleryAdapter(it, pictureList) }
         mRecyclerView.adapter = mAdapter
 
@@ -71,12 +98,7 @@ class GalleryFragment : Fragment() {
         lm.isItemPrefetchEnabled = true
         mRecyclerView.layoutManager = lm
         mRecyclerView.setHasFixedSize(true)
-        if(pictureList.size == 0){
-            ImageNotFoundView.visibility = View.VISIBLE
-        }
-        else{
-            ImageNotFoundView.visibility = View.GONE
-        }
+
     }
 
     fun setFavoriteClickListener(){
@@ -140,4 +162,18 @@ class GalleryFragment : Fragment() {
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+        adView.resume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        adView.pause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        adView.destroy()
+    }
 }

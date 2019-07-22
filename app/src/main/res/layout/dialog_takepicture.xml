@@ -18,7 +18,7 @@
             app:layout_constraintTop_toBottomOf="@+id/date_text"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_width="350dp" android:layout_height="350dp">
         <TextureView
                 android:id="@+id/textureview"
@@ -32,8 +32,20 @@
                 android:layout_width="match_parent" android:layout_height="match_parent"
                 android:visibility="gone"
         />
-    </LinearLayout>
 
+    </LinearLayout>
+    <TextView
+            android:id="@+id/alert_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/convert_container"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:padding="4dp"
+            android:gravity="center"
+            android:fontFamily="@font/nanumbarungothic"
+            android:text="카메라가 흔들릴 경우 실제 저장되는 사진이 다를 수 있습니다."
+    />
 
     <ImageView
             android:id="@+id/take_bt"

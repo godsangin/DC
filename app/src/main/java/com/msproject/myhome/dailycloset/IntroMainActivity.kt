@@ -44,7 +44,7 @@ class IntroMainActivity : AppCompatActivity() {
         imageFirst.startAnimation(animation)
         navigationView.findViewById<TextView>(R.id.navigation_text).setText("Weather")
         val menu = bottomNavigationView.menu
-        myBottomNavigationInteractionListener = object :BottomNavigationInteractionListener{
+        myBottomNavigationInteractionListener = object : BottomNavigationInteractionListener {
             override fun setNavigationIcon(imageResourceId: Int) {
                 menu.findItem(R.id.navigation_weather).setIcon(imageResourceId)
             }
@@ -94,7 +94,9 @@ class IntroMainActivity : AppCompatActivity() {
 
 
         fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.container, WeatherFragment.newInstance(myBottomNavigationInteractionListener))
+        val weatherFragment = WeatherFragment.newInstance()
+        weatherFragment.setBottomNavigationInteractionListener(myBottomNavigationInteractionListener)
+        fragmentTransaction.replace(R.id.container, weatherFragment)
         fragmentTransaction.commit()
     }
 }
