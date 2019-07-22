@@ -28,6 +28,7 @@ import java.io.IOException
 import java.io.InputStreamReader
 import java.io.Reader
 import java.io.Serializable
+import java.lang.IndexOutOfBoundsException
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
@@ -54,12 +55,16 @@ class WeatherFragment : Fragment() {
     private lateinit var myBottomNavigationInteractionListener: BottomNavigationInteractionListener
     lateinit var mAdView : AdView
 
+    fun setBottomNavigationInteractionListener(myBottomNavigationInteractionListener: BottomNavigationInteractionListener){
+        this.myBottomNavigationInteractionListener = myBottomNavigationInteractionListener
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-            myBottomNavigationInteractionListener = it.getSerializable(ARG_PARAM1) as BottomNavigationInteractionListener
-        }
+//        arguments?.let {
+////            myBottomNavigationInteractionListener = it.getSerializable(ARG_PARAM1) as BottomNavigationInteractionListener
+////        }
     }
 
 
@@ -85,10 +90,10 @@ class WeatherFragment : Fragment() {
         val myLocation = getGps()
         setWeatherView(myLocation)
         getWeatherData(myLocation?.getLatitude(), myLocation?.getLongitude())
-//        MobileAds.initialize(context, "ca-app-pub-3136625326865731~3192081537")
-//        mAdView = view.findViewById(R.id.adView)
-//        val adRequest = AdRequest.Builder().build()
-//        mAdView.loadAd(adRequest)
+        MobileAds.initialize(context, "ca-app-pub-3136625326865731~3192081537")
+        mAdView = view.findViewById(R.id.adView)
+        val adRequest = AdRequest.Builder().build()
+        mAdView.loadAd(adRequest)
         Thread.sleep(500)
         return view
     }
@@ -110,19 +115,27 @@ class WeatherFragment : Fragment() {
             val gCoder = Geocoder(context, Locale.getDefault())
             var addr: List<Address>? = null
             try {
-                addr = gCoder.getFromLocation(latitude, longitude, 1)
+                addr = gCoder.getFromLocation(latitude, longitude, 10)
                 if(addr == null){
                     Log.v("알림", "AddressLine(null)" + "\n")
                     Toast.makeText(context, "주소정보 없음", Toast.LENGTH_LONG).show()
+                    return null
                 }
-                val a = addr!!.get(0)
-                for (i in 0..a.maxAddressLineIndex) {
-                    //여기서 변환된 주소 확인할  수 있음
-                    Log.v("알림", "AddressLine(" + i + ")" + a.getAddressLine(i) + "\n")
-                    Log.v("알림", "AddressLine(" + i + ")" + a.locality + "\n")
-                    myLocation = MyLocation(latitude, longitude, a.locality)
+                var locationString:String = "위치정보없음"
+                for(a:Address in addr){
+                    if(a.locality != null && a.locality.length > 0){
+                        locationString = a.locality
+                        return MyLocation(latitude, longitude, locationString)
+                    }
                 }
+//                val a = addr!!.get(0)
+//                if(a != null && a.locality != null){
+//                    locationString = a.locality
+//                }
+                myLocation = MyLocation(latitude, longitude, locationString)
             } catch (e: IOException) {
+                e.printStackTrace()
+            }catch (e: IndexOutOfBoundsException){
                 e.printStackTrace()
             }
             if (addr != null) {
@@ -251,6 +264,11 @@ class WeatherFragment : Fragment() {
                     backgroundImageView.setImageResource(R.drawable.sunny1)
                     myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_sun)
                 }
+                "clear sky" ->{
+                    weatherImageView.setImageResource(R.drawable.ic_sun)
+                    backgroundImageView.setImageResource(R.drawable.sunny1)
+                    myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_sun)
+                }
                 "few clouds" -> {
                     weatherImageView.setImageResource(R.drawable.ic_sun)
                     backgroundImageView.setImageResource(R.drawable.sunny4)
@@ -328,12 +346,11 @@ class WeatherFragment : Fragment() {
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(myBottomNavigationInteractionListener: BottomNavigationInteractionListener) =
+        fun newInstance() =
             WeatherFragment().apply {
-                arguments = Bundle().apply {
-                    putSerializable(ARG_PARAM1, myBottomNavigationInteractionListener as Serializable)
-                }
+                arguments = Bundle().apply {  }
             }
+
     }
 
 }

@@ -139,9 +139,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@+id/calendar_header">
 
     </androidx.viewpager.widget.ViewPager>
+    <include
+        android:id="@+id/recyclerview"
+        layout="@layout/planner_recyclerview"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/calendar_header"
+        />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/calendar_select_view"

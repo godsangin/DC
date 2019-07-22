@@ -62,7 +62,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         builder.setAutoCancel(true);
         builder.setDefaults(Notification.DEFAULT_ALL);
         builder.setWhen(System.currentTimeMillis());
-        builder.setSmallIcon(R.mipmap.ic_launcher);
+        builder.setSmallIcon(R.drawable.icon);
         builder.setContentText(content);
         builder.setContentIntent(pendingIntent);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
