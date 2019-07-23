@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnimationUtils
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -38,6 +39,8 @@ class IntroMainActivity : AppCompatActivity() {
         imageThird = findViewById(R.id.third_image)
         imageFourth = findViewById(R.id.fourth_image)
         textExplain = findViewById(R.id.explain_text)
+        val fragmentContainer:FrameLayout = findViewById(R.id.container)
+        fragmentContainer.isClickable = false
         textExplain.bringToFront()
         val animation =AnimationUtils.loadAnimation(applicationContext, R.anim.mouse_focus)
         imageFirst.bringToFront()

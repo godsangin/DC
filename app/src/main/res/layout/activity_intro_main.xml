@@ -16,6 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintVertical_weight="1"
+            android:clickable="false"
             app:layout_constraintTop_toBottomOf="@+id/bottom_navigation_container"
             app:layout_constraintBottom_toBottomOf="parent">
 
