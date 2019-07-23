@@ -78,13 +78,13 @@ class MainActivity : AppCompatActivity(),BottomNavigationView.OnNavigationItemSe
     }
     protected fun getPermission(){
         var permissionListener: PermissionListener = object : PermissionListener{
+            override fun onPermissionDenied(deniedPermissions: MutableList<String>?) {
+                finish()
+            }
+
             override fun onPermissionGranted() {
                 setIntro()
 
-            }
-
-            override fun onPermissionDenied(deniedPermissions: ArrayList<String>?) {
-                finish();
             }
         }
         TedPermission.with(this)
