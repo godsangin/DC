@@ -1,6 +1,7 @@
 # DailyCloset(패션다이어리)
-
+==============================
 > ## MainActivity
+----------------------
   > > ### TedPermission
   > >  - 위치권한, 카메라 권한, 파일접근 권한을 얻기 위해 권한 요청
   > > ### BottomNavigationView
