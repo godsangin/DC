@@ -1,6 +1,7 @@
 package com.msproject.myhome.dailycloset
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -8,6 +9,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import org.joda.time.LocalDate
+import android.provider.MediaStore
+import android.R.attr.data
+import android.database.Cursor
+import android.util.Log
+import android.widget.Toast
+import java.io.File
+import java.lang.NullPointerException
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -36,15 +44,21 @@ class CalendarFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        var view : View = inflater.inflate(R.layout.fragment_calendar, container, false);
-        plannerView = view.findViewById(R.id.planner);
+        var view : View = inflater.inflate(R.layout.fragment_calendar, container, false)
+        plannerView = view.findViewById(R.id.planner)
         plannerView.initView(LocalDate(), this)
-        return view;
+        return view
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        Log.d("activityresult==","calendar")
+        super.onActivityResult(requestCode, resultCode, data)
 
+    }
 
-
-
+    fun saveGalleryImage(filePath:String){
+        plannerView.saveGalleryImage(filePath)
+        plannerView.initView(LocalDate(), this)
+        Toast.makeText(context, "저장되었습니다.", Toast.LENGTH_SHORT).show()
+    }
 }

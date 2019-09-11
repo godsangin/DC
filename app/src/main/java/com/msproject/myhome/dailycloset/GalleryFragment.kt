@@ -10,8 +10,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdView
+import com.google.android.gms.ads.MobileAds
 import com.kakao.adfit.ads.AdListener
 import com.kakao.adfit.ads.ba.BannerAdView
 import org.joda.time.LocalDate
@@ -27,11 +31,13 @@ class GalleryFragment : Fragment() {
     lateinit var searchButton:Button
     lateinit var searchText:EditText
     lateinit var ImageNotFoundView:ConstraintLayout
+    lateinit var componentLinearButton:ImageView
+    lateinit var componentGridButton:ImageView
     lateinit var adView:BannerAdView
-    var viewCode:Int = 0;
-
-
-
+    var viewCode:Int = 0
+    var isGridLayout:Boolean = false
+    lateinit var mAdapter:GalleryAdapter
+    lateinit var mAdView : AdView
 
 
     override fun onCreateView(
@@ -45,26 +51,20 @@ class GalleryFragment : Fragment() {
         searchButton = view.findViewById(R.id.search_bt)
         searchText = view.findViewById(R.id.search_text)
         ImageNotFoundView = view.findViewById(R.id.image_not_found_view)
+        componentLinearButton = view.findViewById(R.id.component_linear_bt)
+        componentGridButton = view.findViewById(R.id.component_grid_bt)
+        mAdView = view.findViewById(R.id.admob_adView)
+        adView = view.findViewById(R.id.adfit_adview)
+
+        componentLinearButton.setImageResource(R.drawable.ic_view_day_accent_24dp)
         setFavoriteClickListener()
         setSearchListener()
         setRecyclerView()
+        setLanguege()
+        setComponentButton()
 
-        adView = view.findViewById(R.id.adfit_adview)
-        adView.setClientId("DAN-tonyi5sd4vnd")
-        adView.setAdListener(object: AdListener{
-            override fun onAdFailed(p0: Int) {
 
-            }
 
-            override fun onAdClicked() {
-
-            }
-
-            override fun onAdLoaded() {
-
-            }
-        })
-        adView.loadAd()
         return view
     }
     fun convertFileName(date: LocalDate): String {
@@ -91,17 +91,12 @@ class GalleryFragment : Fragment() {
             pictureList = ArrayList<Picture>(pictureList.asReversed().toList())
             ImageNotFoundView.visibility = View.GONE
         }
-        val mAdapter = context?.let { GalleryAdapter(it, pictureList) }
+        mAdapter = GalleryAdapter(context!!, pictureList, isGridLayout)
         mRecyclerView.adapter = mAdapter
-
-        val lm = LinearLayoutManager(context)
-        lm.isItemPrefetchEnabled = true
-        mRecyclerView.layoutManager = lm
-        mRecyclerView.setHasFixedSize(true)
-
+        setComponent()
     }
 
-    fun setFavoriteClickListener(){
+    fun setFavoriteClickListener(){//Date라는애 추가하지 못하게 !
         favoriteButton.setOnClickListener(View.OnClickListener {
             if(viewCode == 0){
                 pictureList.clear()
@@ -114,13 +109,7 @@ class GalleryFragment : Fragment() {
                     pictureList.add(Picture(favorite + ".jpg", Environment.getExternalStorageDirectory().toString() + "/Pictures/DailyCloset/" + favorite + ".jpg"))
                 }
                 pictureList = ArrayList(pictureList.asReversed().toList())
-                val mAdapter = context?.let { GalleryAdapter(it, pictureList) }
-                mRecyclerView.adapter = mAdapter
-
-                val lm = LinearLayoutManager(context)
-                lm.isItemPrefetchEnabled = true
-                mRecyclerView.layoutManager = lm
-                mRecyclerView.setHasFixedSize(true)
+                setComponent()
                 viewCode = 1
             }
             else{
@@ -151,13 +140,10 @@ class GalleryFragment : Fragment() {
             else{
                 ImageNotFoundView.visibility = View.GONE
             }
-            val mAdapter = context?.let { GalleryAdapter(it, pictureList) }
+            val mAdapter = context?.let { GalleryAdapter(it, pictureList, isGridLayout) }
             mRecyclerView.adapter = mAdapter
 
-            val lm = LinearLayoutManager(context)
-            lm.isItemPrefetchEnabled = true
-            mRecyclerView.layoutManager = lm
-            mRecyclerView.setHasFixedSize(true)
+
             viewCode = 0
         })
     }
@@ -175,5 +161,89 @@ class GalleryFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         adView.destroy()
+    }
+
+    fun setLanguege(){
+        val sharedPreferences = context?.getSharedPreferences("setting", Context.MODE_PRIVATE)
+        val language = sharedPreferences?.getInt("language", 0)
+        when(language){
+            0 -> {
+                searchText.setHint(getString(R.string.gallery_fragment_search_text_EN))
+                searchButton.text = getString(R.string.gallery_fragment_search_button_EN)
+                MobileAds.initialize(context, "ca-app-pub-3136625326865731~3192081537")
+                val adRequest = AdRequest.Builder().build()
+                mAdView.visibility = View.VISIBLE
+                mAdView.loadAd(adRequest)
+                adView.visibility = View.GONE
+
+            }
+            1 -> {
+                searchText.setHint(getString(R.string.gallery_fragment_search_text_KR))
+                searchButton.text = getString(R.string.gallery_fragment_search_button_KR)
+                adView.visibility = View.VISIBLE
+                adView.setClientId("DAN-tonyi5sd4vnd")
+                adView.setAdListener(object: AdListener{
+                    override fun onAdFailed(p0: Int) {
+
+                    }
+
+                    override fun onAdClicked() {
+
+                    }
+
+                    override fun onAdLoaded() {
+
+                    }
+                })
+                adView.loadAd()
+                mAdView.visibility = View.GONE
+            }
+            2 -> {
+                searchText.setHint(getString(R.string.gallery_fragment_search_text_JP))
+                searchButton.text = getString(R.string.gallery_fragment_search_button_JP)
+                MobileAds.initialize(context, "ca-app-pub-3136625326865731~3192081537")
+                val adRequest = AdRequest.Builder().build()
+                mAdView.visibility = View.VISIBLE
+                mAdView.loadAd(adRequest)
+                adView.visibility = View.GONE
+            }
+        }
+    }
+
+    fun setComponentButton(){
+        componentGridButton.setOnClickListener(View.OnClickListener {
+            if(!isGridLayout){
+                isGridLayout = true
+                mAdapter = GalleryAdapter(context!!, pictureList, isGridLayout)
+                componentGridButton.setImageResource(R.drawable.ic_view_module_accent_24dp)
+                componentLinearButton.setImageResource(R.drawable.ic_view_day_gray_24dp)
+                setComponent()
+            }
+        })
+        componentLinearButton.setOnClickListener(View.OnClickListener {
+            if(isGridLayout){
+                isGridLayout = false
+                mAdapter = GalleryAdapter(context!!, pictureList, isGridLayout)
+                componentGridButton.setImageResource(R.drawable.ic_view_module_gray_24dp)
+                componentLinearButton.setImageResource(R.drawable.ic_view_day_accent_24dp)
+                setComponent()
+            }
+        })
+    }
+
+    fun setComponent(){
+        if(isGridLayout){
+            val gl = GridLayoutManager(context,2)
+            mRecyclerView.layoutManager = gl
+            mRecyclerView.setHasFixedSize(true)
+            mRecyclerView.adapter = mAdapter
+        }
+        else{
+            val lm = LinearLayoutManager(context)
+            lm.isItemPrefetchEnabled = true
+            mRecyclerView.layoutManager = lm
+            mRecyclerView.setHasFixedSize(true)
+            mRecyclerView.adapter = mAdapter
+        }
     }
 }

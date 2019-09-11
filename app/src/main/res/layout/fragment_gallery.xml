@@ -8,72 +8,110 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
         <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/search_container"
-                app:layout_constraintTop_toTopOf="parent"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-            <ImageView
-                    android:id="@+id/favorite_bt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="8dp"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    android:src="@drawable/ic_star_black_24dp"/>
-            <EditText
-                    android:id="@+id/search_text"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toRightOf="@+id/favorite_bt"
-                    android:layout_width="0dp"
-                    app:layout_constraintVertical_weight="1"
-                    android:hint="날짜를 입력하세요(YYYYMMDD)"
-                    android:inputType="number"
-                    android:layout_height="wrap_content" app:layout_constraintEnd_toStartOf="@+id/search_bt"
-                    android:layout_marginEnd="8dp" app:layout_constraintStart_toEndOf="@+id/favorite_bt"
-                    android:layout_marginStart="8dp"/>
-            <Button
-                    android:id="@+id/search_bt"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    android:text="검색"
-                    android:background="@drawable/button_small"/>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-        <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/gallery_recyclerview"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="60dp"
-                app:layout_constraintTop_toBottomOf="@+id/search_container">
-
-        </androidx.recyclerview.widget.RecyclerView>
-        <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/image_not_found_view"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"
-                app:layout_constraintTop_toBottomOf="@+id/search_container"
-                android:visibility="gone">
-            <ImageView
-                    android:id="@+id/image_not_found"
-                    android:layout_width="100dp"
-                    android:layout_height="100dp"
+                app:layout_constraintVertical_weight="1"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/adfit_adview"
+                android:layout_marginBottom="4dp"
+                >
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/search_container"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    android:src="@drawable/ic_image_black_24dp"/>
-            <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                <ImageView
+                        android:id="@+id/favorite_bt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="8dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        android:src="@drawable/ic_star_black_24dp"/>
+                <EditText
+                        android:id="@+id/search_text"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toRightOf="@+id/favorite_bt"
+                        android:layout_width="0dp"
+                        app:layout_constraintVertical_weight="1"
+                        android:hint="날짜를 입력하세요(YYYYMMDD)"
+                        android:inputType="number"
+                        android:layout_height="wrap_content" app:layout_constraintEnd_toStartOf="@+id/search_bt"
+                        android:layout_marginEnd="8dp" app:layout_constraintStart_toEndOf="@+id/favorite_bt"
+                        android:layout_marginStart="8dp"/>
+                <Button
+                        android:id="@+id/search_bt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        android:text="검색"
+                        android:background="@drawable/button_small"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/view_type_container"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layout_constraintTop_toBottomOf="@+id/image_not_found"
-                    app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="parent"
-                    android:text="이미지를 찾을 수 없습니다."/>
+                    app:layout_constraintTop_toBottomOf="@+id/search_container">
+                <ImageView
+                        android:id="@+id/component_linear_bt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_view_day_gray_24dp"
+                        android:padding="8dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintRight_toLeftOf="@+id/component_grid_bt"
+                        />
+                <ImageView
+                        android:id="@+id/component_grid_bt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_view_module_gray_24dp"
+                        android:padding="8dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/gallery_recyclerview"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:numColumns="auto_fit"
+                    android:stretchMode="columnWidth"
+                    android:layout_margin="4dp"
+                    app:layout_constraintTop_toBottomOf="@+id/view_type_container"
+                    app:layout_constraintBottom_toTopOf="@+id/adfit_adview" tools:ignore="NotSibling">
+
+            </androidx.recyclerview.widget.RecyclerView>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/image_not_found_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    app:layout_constraintTop_toBottomOf="@+id/search_container"
+                    android:visibility="gone">
+                <ImageView
+                        android:id="@+id/image_not_found"
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        android:src="@drawable/ic_image_black_24dp"/>
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintTop_toBottomOf="@+id/image_not_found"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toRightOf="parent"
+                        android:text="이미지를 찾을 수 없습니다."/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
         <com.kakao.adfit.ads.ba.BannerAdView
                 android:id="@+id/adfit_adview"
@@ -82,5 +120,15 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
+        <com.google.android.gms.ads.AdView
+                xmlns:ads="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/admob_adView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                ads:layout_constraintBottom_toBottomOf="parent"
+                ads:adSize="BANNER"
+                android:visibility="gone"
+                ads:adUnitId="ca-app-pub-3136625326865731/2033667630">
+        </com.google.android.gms.ads.AdView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

@@ -61,7 +61,7 @@ public class GPSInfo extends Service implements LocationListener {
                     .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
             if (!isGPSEnabled && !isNetworkEnabled) {
                 // GPS 와 네트워크사용이 가능하지 않을때 소스 구현
-                Toast.makeText(mContext, "gps와 네트워크 사용이 불가능합니다.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, getString(R.string.location_not_found_KR), Toast.LENGTH_SHORT).show();
             } else {
                 this.isGetLocation = true;
                 // 네트워크 정보로 부터 위치값 가져오기

@@ -13,13 +13,21 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import java.io.File
+import android.util.DisplayMetrics
+import android.widget.GridLayout
+import androidx.core.view.setPadding
 
-class GalleryAdapter(val context:Context, val pictureList:ArrayList<Picture>):
+
+class GalleryAdapter(val context:Context, val pictureList:ArrayList<Picture>, val isGridLayout: Boolean):
         RecyclerView.Adapter<GalleryAdapter.Holder>() {
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
-        val view = LayoutInflater.from(context).inflate(R.layout.gallery_item, parent, false)
-//        resetGlide()
+        var view = LayoutInflater.from(context).inflate(R.layout.gallery_item, parent, false)
+        if(isGridLayout){
+            view = LayoutInflater.from(context).inflate(R.layout.gallery_item_small, parent, false)
+        }
+
         return Holder(view)
     }
 
@@ -28,6 +36,23 @@ class GalleryAdapter(val context:Context, val pictureList:ArrayList<Picture>):
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
+//        if(isGridLayout){
+//            val displaymetrics = DisplayMetrics()
+//            (context as Activity).windowManager.defaultDisplay.getMetrics(displaymetrics)
+//            //if you need three fix imageview in width
+//            val devicewidth = displaymetrics.widthPixels * 4 / 9
+//            //if you need 4-5-6 anything fix imageview in height
+//            val deviceheight = displaymetrics.heightPixels / 4
+//            holder.itemView.layoutParams.width = devicewidth
+//            holder.itemView.layoutParams.height = deviceheight
+//            holder.itemView.findViewById<TextView>(R.id.myText).setTextSize(15F)
+//            val favoriteButton = holder.itemView.findViewById<ImageView>(R.id.favorite_bt)
+//            val removeButton = holder.itemView.findViewById<ImageView>(R.id.remove_bt)
+//            favoriteButton.setPadding(0)
+//            removeButton.setPadding(0)
+//            Log.d("isGrid==", "true")
+//        }
+
         holder?.bind(pictureList[position], context)
     }
 
@@ -48,7 +73,7 @@ class GalleryAdapter(val context:Context, val pictureList:ArrayList<Picture>):
                 myImageView?.setImageResource(R.mipmap.ic_launcher)
             }
             /* 나머지 TextView와 String 데이터를 연결한다. */
-            myTextView?.text = picture.getFileName().replace(".jpg", "")
+            myTextView?.text = "Date: " + picture.getFileName().replace(".jpg", "")
             val sp = context.getSharedPreferences("favorite", Context.MODE_PRIVATE)
             val pastString = sp.getString("favorite", "")
             Log.d("filereplace==", picture.fileName.replace("jpg",""))
@@ -108,21 +133,6 @@ class GalleryAdapter(val context:Context, val pictureList:ArrayList<Picture>):
                 val y = (size.y * 0.3f).toInt()
                 window.setLayout(x, y)
             })
-        }
-    }
-    private fun resetGlide(){
-        Glide.get(context).clearMemory()
-        MyAsyncTask().execute(1,2,3,4,5)
-    }
-
-    inner class MyAsyncTask: AsyncTask<Int, Void, Void>(){
-        override fun doInBackground(vararg p0: Int?): Void? {
-            Glide.get(context).clearDiskCache()
-            return null;
-        }
-
-        override fun onPostExecute(result: Void?) {
-            super.onPostExecute(result)
         }
     }
 

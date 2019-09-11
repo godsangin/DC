@@ -3,6 +3,7 @@ package com.msproject.myhome.dailycloset;
 public class SettingItem {
     String title;
     String content;
+    boolean checkboxVisibility;
 
     public SettingItem(String title, String content) {
         this.title = title;
@@ -23,5 +24,13 @@ public class SettingItem {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public boolean isCheckboxVisibility() {
+        return checkboxVisibility;
+    }
+
+    public void setCheckboxVisibility(boolean checkboxVisibility) {
+        this.checkboxVisibility = checkboxVisibility;
     }
 }

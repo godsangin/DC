@@ -46,9 +46,12 @@ public class FSListViewAdapter extends BaseAdapter {
         settingTitle.setText(items.get(position).getTitle());
         settingContent.setText(items.get(position).getContent());
         final CheckBox cb = view.findViewById(R.id.checkbox);
-        cb.setVisibility(View.VISIBLE);
+        if(items.get(position).checkboxVisibility){
+            cb.setVisibility(View.VISIBLE);
+        }
 
         final SharedPreferences sharedPreferences = context.getSharedPreferences("setting", Context.MODE_PRIVATE);
+
         boolean push = sharedPreferences.getBoolean("push", false);
         if(push && position == 0){
             cb.setChecked(true);
@@ -66,18 +69,51 @@ public class FSListViewAdapter extends BaseAdapter {
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putBoolean("push", true);
                             editor.commit();
-                            Toast.makeText(parent.getContext(), "푸시 기능이 활성화됩니다.", Toast.LENGTH_SHORT).show();
+                            sendPositiveToastByLanguage();
+
                         } else {
                             //안되게
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putBoolean("push", false);
                             editor.commit();
-                            Toast.makeText(parent.getContext(), "푸시 기능이 해제됩니다.", Toast.LENGTH_SHORT).show();
+                            sendNegativeToastByLanguage();
                         }
                         break;
                 }
             }
         });
         return view;
+    }
+
+    private void sendPositiveToastByLanguage(){
+        SharedPreferences settingSharedPreferences = context.getSharedPreferences("setting", Context.MODE_PRIVATE);
+        int language = settingSharedPreferences.getInt("language", Context.MODE_PRIVATE);
+        switch (language){
+            case 0:
+                Toast.makeText(context, context.getString(R.string.fs_listview_push_noti_EN), Toast.LENGTH_SHORT).show();
+                break;
+            case 1:
+                Toast.makeText(context, context.getString(R.string.fs_listview_push_noti_KR), Toast.LENGTH_SHORT).show();
+                break;
+            case 2:
+                Toast.makeText(context, context.getString(R.string.fs_listview_push_noti_JP), Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
+    private void sendNegativeToastByLanguage(){
+        SharedPreferences settingSharedPreferences = context.getSharedPreferences("setting", Context.MODE_PRIVATE);
+        int language = settingSharedPreferences.getInt("language", Context.MODE_PRIVATE);
+        switch (language){
+            case 0:
+                Toast.makeText(context, context.getString(R.string.fs_listview_nonpush_noti_EN), Toast.LENGTH_SHORT).show();
+                break;
+            case 1:
+                Toast.makeText(context, context.getString(R.string.fs_listview_nonpush_noti_KR), Toast.LENGTH_SHORT).show();
+                break;
+            case 2:
+                Toast.makeText(context, context.getString(R.string.fs_listview_nonpush_noti_JP), Toast.LENGTH_SHORT).show();
+                break;
+        }
     }
 }

@@ -12,7 +12,6 @@
                 android:id="@+id/background_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:src="@drawable/sunny3_cloud"
                 android:scaleType="center"
                 />
         <LinearLayout
@@ -25,11 +24,16 @@
                 android:orientation="vertical"
                 android:gravity="center">
             <ImageView
+                    android:id="@+id/loading_image"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:padding="4dp"/>
+            <ImageView
                     android:id="@+id/weather_image"
                     android:padding="4dp"
                     android:layout_width="150dp"
                     android:layout_height="150dp"
-                    android:src="@drawable/ic_sun"/>
+                    android:visibility="gone"/>
             <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -41,7 +45,7 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:textSize="16sp"
-                        android:text="최고기온: "
+                        android:text="max: "
                         android:textColor="@color/colorPrimary"/>
                 <TextView
                         android:id="@+id/min_temp"
@@ -50,7 +54,7 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:textSize="16sp"
-                        android:text="최저기온: "
+                        android:text="min: "
                         android:textColor="@color/colorPrimary"/>
             </LinearLayout>
             <TextView
@@ -140,7 +144,7 @@
                         android:id="@+id/location_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="유성구"
+                        android:text="Could not found"
                         android:textSize="16sp"
                         android:textColor="@color/colorPrimary"
                         android:padding="4dp"/>
