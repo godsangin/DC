@@ -1,5 +1,6 @@
 package com.msproject.myhome.dailycloset
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -25,11 +26,13 @@ class IntroMainActivity : AppCompatActivity() {
     lateinit var navigationView: LinearLayout
     private lateinit var myBottomNavigationInteractionListener:BottomNavigationInteractionListener
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_intro_main)
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         val introView = findViewById<LinearLayout>(R.id.mouse_view_container)
+        val sharedPreferences = getSharedPreferences("setting", Context.MODE_PRIVATE)
         fragmentManager = supportFragmentManager
         fragmentTransaction = fragmentManager.beginTransaction()
         navigationView = findViewById(R.id.navigation_view)
@@ -52,6 +55,8 @@ class IntroMainActivity : AppCompatActivity() {
                 menu.findItem(R.id.navigation_weather).setIcon(imageResourceId)
             }
         }
+        val language = sharedPreferences.getInt("language", 0)
+        setTextFirst(language)
 
         imageFirst.setOnClickListener(View.OnClickListener {
             imageFirst.clearAnimation()
@@ -59,7 +64,7 @@ class IntroMainActivity : AppCompatActivity() {
             imageSecond.visibility = View.VISIBLE
             imageSecond.bringToFront()
             imageSecond.startAnimation(animation)
-            textExplain.setText("새로운 옷을 기록하거나 옷을 기록한 날짜를 알아볼 수 있는 달력을 확인할 수 있습니다. ")
+            setTextSecond(language)
             fragmentManager.popBackStack()
             fragmentTransaction = fragmentManager.beginTransaction()
             fragmentTransaction.replace(R.id.container, CalendarFragment())
@@ -72,7 +77,7 @@ class IntroMainActivity : AppCompatActivity() {
             imageThird.visibility = View.VISIBLE
             imageThird.bringToFront()
             imageThird.startAnimation(animation)
-            textExplain.setText("가장 최근 찍은 사진을 기준으로 사진별로 모아볼 수 있습니다.")
+            setTextThird(language)
             fragmentManager.popBackStack()
             fragmentTransaction = fragmentManager.beginTransaction()
             fragmentTransaction.replace(R.id.container, GalleryFragment())
@@ -84,7 +89,7 @@ class IntroMainActivity : AppCompatActivity() {
             imageFourth.visibility = View.VISIBLE
             imageFourth.bringToFront()
             imageFourth.startAnimation(animation)
-            textExplain.setText("기능에 관한 설정을 변경할 수 있습니다.")
+            setTextFourth(language)
             fragmentManager.popBackStack()
             fragmentTransaction = fragmentManager.beginTransaction()
             fragmentTransaction.replace(R.id.container, SettingFragment())
@@ -97,9 +102,66 @@ class IntroMainActivity : AppCompatActivity() {
 
 
         fragmentTransaction = fragmentManager.beginTransaction()
-        val weatherFragment = WeatherFragment.newInstance()
+        //에러 확인하기
+        val weatherFragment = WeatherFragment.newInstance(null)
         weatherFragment.setBottomNavigationInteractionListener(myBottomNavigationInteractionListener)
         fragmentTransaction.replace(R.id.container, weatherFragment)
         fragmentTransaction.commit()
+    }
+
+    private fun setTextFirst(language:Int){
+        when(language){
+            0 -> {
+                textExplain.setText(getString(R.string.intro_main_first_text_EN))
+            }
+            1 -> {
+                textExplain.setText(getString(R.string.intro_main_first_text_KR))
+            }
+            2 -> {
+                textExplain.setText(getString(R.string.intro_main_first_text_JP))
+            }
+        }
+    }
+
+    private fun setTextSecond(language:Int){
+        when(language){
+            0 -> {
+                textExplain.setText(getString(R.string.intro_main_second_text_EN))
+            }
+            1 -> {
+                textExplain.setText(getString(R.string.intro_main_second_text_KR))
+            }
+            2 -> {
+                textExplain.setText(getString(R.string.intro_main_second_text_JP))
+            }
+        }
+    }
+
+    private fun setTextThird(language:Int){
+        when(language){
+            0 -> {
+                textExplain.setText(getString(R.string.intro_main_third_text_EN))
+            }
+            1 -> {
+                textExplain.setText(getString(R.string.intro_main_third_text_KR))
+            }
+            2 -> {
+                textExplain.setText(getString(R.string.intro_main_third_text_JP))
+            }
+        }
+    }
+
+    private fun setTextFourth(language:Int){
+        when(language){
+            0 -> {
+                textExplain.setText(getString(R.string.intro_main_fourth_text_EN))
+            }
+            1 -> {
+                textExplain.setText(getString(R.string.intro_main_fourth_text_KR))
+            }
+            2 -> {
+                textExplain.setText(getString(R.string.intro_main_fourth_text_JP))
+            }
+        }
     }
 }

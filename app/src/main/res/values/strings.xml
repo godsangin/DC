@@ -9,4 +9,139 @@
     <string name="openweatherAPIKEY">778c2349eb852c1dfd18d28408feef23</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="back_button_pressed_KR">"\'뒤로\' 버튼을 한번 더 누르시면 종료됩니다."</string>
+    <string name="back_button_pressed_EN">Press the back button again to exit.</string>
+    <string name="back_button_pressed_JP">[戻る]ボタンをもう一度押すと終了します.</string>
+
+    <string name="location_not_found_KR">gps와 네트워크 사용이 불가능합니다.</string>
+    <string name="location_not_found_EN">gps and network are not available.</string>
+    <string name="location_not_found_JP">gpsとネットワークの使用が不可能です。</string>
+
+    <string name="navigation_weather_KR">날씨</string>
+    <string name="navigation_weather_EN">Weather</string>
+    <string name="navigation_weather_JP">天気</string>
+
+    <string name="navigation_calendar_KR">날짜별</string>
+    <string name="navigation_calendar_EN">By Date</string>
+    <string name="navigation_calendar_JP">日付</string>
+
+    <string name="navigation_gallery_KR">사진별</string>
+    <string name="navigation_gallery_EN">By Picture</string>
+    <string name="navigation_gallery_JP">写真星</string>
+
+    <string name="navigation_setting_KR">설정</string>
+    <string name="navigation_setting_EN">Setting</string>
+    <string name="navigation_setting_JP">設定</string>
+
+
+    <string name="weather_fragment_min_temp_KR">최저기온:</string>
+    <string name="weather_fragment_min_temp_EN">Minimum:</string>
+    <string name="weather_fragment_min_temp_JP">最低気温:</string>
+
+    <string name="weather_fragment_max_temp_KR">최고기온:</string>
+    <string name="weather_fragment_max_temp_EN">Maximum:</string>
+    <string name="weather_fragment_max_temp_JP">最高気温:</string>
+
+    <string name="weather_fragment_location_not_found_KR">주소 정보를 찾을 수 없습니다.</string>
+    <string name="weather_fragment_location_not_found_EN">Location could not found.</string>
+    <string name="weather_fragment_location_not_found_JP">場所が見つかりませんでした.</string>
+
+    <string name="dialog_take_picture_alert_KR">카메라가 흔들릴 경우 실제 저장되는 사진이 다를 수 있습니다.</string>
+    <string name="dialog_take_picture_alert_EN">If the camera shakes, the actual recorded picture may be different.
+    </string>
+    <string name="dialog_take_picture_alert_JP">カメラが揺れる場合、実際の保存されている写真が異なる場合があります。</string>
+
+    <string name="dialog_take_picture_retake_KR">다시 찍기</string>
+    <string name="dialog_take_picture_retake_EN">Retake</string>
+    <string name="dialog_take_picture_retake_JP">再び浸漬</string>
+
+    <string name="dialog_take_picture_close_KR">닫기</string>
+    <string name="dialog_take_picture_close_EN">Close</string>
+    <string name="dialog_take_picture_close_JP">閉じる</string>
+
+    <string name="gallery_fragment_search_text_KR">8자리 날짜를 입력하세요.</string>
+    <string name="gallery_fragment_search_text_EN">Please enter an 8 digit date</string>
+    <string name="gallery_fragment_search_text_JP">8桁の日付を入力してください。</string>
+
+    <string name="gallery_fragment_search_button_KR">검색</string>
+    <string name="gallery_fragment_search_button_EN">Search</string>
+    <string name="gallery_fragment_search_button_JP">検索</string>
+
+    <string name="delete_picture_dialog_title_KR">사진 삭제</string>
+    <string name="delete_picture_dialog_title_EN">Delete photo</string>
+    <string name="delete_picture_dialog_title_JP">写真を削除</string>
+
+    <string name="delete_picture_dialog_text_KR">해당 사진을 삭제하시겠습니까?</string>
+    <string name="delete_picture_dialog_text_EN">Are you sure you want to delete this photo?</string>
+    <string name="delete_picture_dialog_text_JP">この写真を削除しますか？</string>
+
+    <string name="delete_picture_dialog_positive_KR">확인</string>
+    <string name="delete_picture_dialog_positive_EN">Confirm</string>
+    <string name="delete_picture_dialog_positive_JP">確認</string>
+
+    <string name="delete_picture_dialog_negative_KR">취소</string>
+    <string name="delete_picture_dialog_negative_EN">Cancel</string>
+    <string name="delete_picture_dialog_negative_JP">キャンセル</string>
+
+    <string name="setting_fragment_push_title_KR">푸시 알림 허용</string>
+    <string name="setting_fragment_push_title_EN">Allow push notification</string>
+    <string name="setting_fragment_push_title_JP">プッシュ通知を許可する</string>
+
+    <string name="setting_fragment_push_content_KR">체크할 경우 푸시 알림 기능을 활성화하고 이벤트를 수신합니다.</string>
+    <string name="setting_fragment_push_content_EN">If checked, enable push notifications and receive events.</string>
+    <string name="setting_fragment_push_content_JP">チェックした場合、プッシュ通知機能を有効にしてイベントを受信します。</string>
+
+    <string name="setting_fragment_language_title_KR">언어 설정</string>
+    <string name="setting_fragment_language_title_EN">Language settings</string>
+    <string name="setting_fragment_language_title_JP">言語設定</string>
+
+    <string name="setting_fragment_language_content_KR">앱을 사용하기 위한 언어를 설정합니다.</string>
+    <string name="setting_fragment_language_content_EN">Set the language for using the app.</string>
+    <string name="setting_fragment_language_content_JP">アプリを使用するための言語を設定します。</string>
+
+    <string name="intro_main_first_text_KR">현재 나의 위치에 따른 오늘의 날씨정보를 확인할 수 있습니다.</string>
+    <string name="intro_main_first_text_EN">You can check today\&apos;s weather information according to your current
+        location.
+    </string>
+    <string name="intro_main_first_text_JP">現在、私の位置に応じた今日の天気情報を確認することができます。</string>
+
+    <string name="intro_main_second_text_KR">새로운 옷을 기록하거나 옷을 기록한 날짜를 찾아볼 수 있는 달력을 확인할 수 있습니다.</string>
+    <string name="intro_main_second_text_EN">You can see a calendar where you can record new clothes or browse the date
+        you recorded them.
+    </string>
+    <string name="intro_main_second_text_JP">新しい服を記録したり、服を記録した日付を参照できるカレンダーを確認することができます。</string>
+
+    <string name="intro_main_third_text_KR">가장 최근 찍은 사진을 기준으로 사진별로 모아볼 수 있습니다.</string>
+    <string name="intro_main_third_text_EN">You can group by picture based on your most recent picture.</string>
+    <string name="intro_main_third_text_JP">最近撮影した写真を基準に写真ごとに集め見ることができます。</string>
+
+    <string name="intro_main_fourth_text_KR">기능에 관한 설정을 변경할 수 있습니다.</string>
+    <string name="intro_main_fourth_text_EN">You can change the settings related to the function.</string>
+    <string name="intro_main_fourth_text_JP">機能に関する設定を変更することができます。</string>
+
+    <string name="fs_listview_push_noti_KR">푸시 기능이 활성화됩니다.</string>
+    <string name="fs_listview_push_noti_EN">Push function is activated.</string>
+    <string name="fs_listview_push_noti_JP">プッシュ機能が有効になります。</string>
+
+    <string name="fs_listview_nonpush_noti_KR">푸시 기능이 해제됩니다.</string>
+    <string name="fs_listview_nonpush_noti_EN">Push is turned off.</string>
+    <string name="fs_listview_nonpush_noti_JP">プッシュ機能が無効になります。</string>
+
+    <string name="dialog_select_title_KR">수행할 작업을 선택해주세요.</string>
+    <string name="dialog_select_title_EN">Choose what to do.</string>
+    <string name="dialog_select_title_JP">実行する操作を選択します。</string>
+
+    <string name="dialog_select_gallery_KR">갤러리에서 사진 가져오기</string>
+    <string name="dialog_select_gallery_EN">Import Photos from Gallery</string>
+    <string name="dialog_select_gallery_JP">ギャラリーから写真をインポートする</string>
+
+    <string name="dialog_select_camera_KR">카메라 앱으로 사진 찍기</string>
+    <string name="dialog_select_camera_EN">Take a photo with the Camera app</string>
+    <string name="dialog_select_camera_JP">カメラアプリで写真を撮る</string>
+
+    <string name="setting_submit_KR">확인</string>
+    <string name="setting_submit_EN">Submit</string>
+    <string name="setting_submit_JP">確認</string>
+
 </resources>

@@ -1,16 +1,18 @@
 package com.msproject.myhome.dailycloset;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.os.Environment;
 import android.os.Parcel;
+import android.provider.MediaStore;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -30,6 +32,9 @@ import org.joda.time.LocalDate;
 
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Map;
@@ -37,26 +42,33 @@ import java.util.Map;
 public class PlannerView  extends ConstraintLayout {
     TextView yearText;
     TextView monthText;
+    TextView yearLiteral;
+    TextView monthLiteral;
     LinearLayout calendarSelectLayout;
     ConstraintLayout calendarSelectView;
     boolean isCalendarSelectClicked;
-
-//    ViewPager viewPager;
-
     Context context;
-
     Button calendarSelectButton;
-
     boolean isExistToday;
     Button todayButton;
-
     Button previousButton;
     Button nextButton;
-
     LocalDate date;
-
     ConstraintLayout recyclerviewContainer;
     RecyclerView recyclerView;
+    LinearLayout calendarHeader;
+    boolean isEnglishCalendar;
+    int PICK_FROM_ALBUM = 2000;
+    LocalDate selectedDate;
+
+    TextView sunday;
+    TextView monday;
+    TextView tuesday;
+    TextView wednesday;
+    TextView thursday;
+    TextView friday;
+    TextView saterday;
+
 
 
 
@@ -101,40 +113,24 @@ public class PlannerView  extends ConstraintLayout {
                 setCalendarSelectLayout();
             }
         });
+        yearLiteral = view.findViewById(R.id.year_text);
+        monthLiteral = view.findViewById(R.id.month_text);
+        calendarHeader = view.findViewById(R.id.calendar_header);
+        sunday = calendarHeader.findViewById(R.id.sun);
+        monday = calendarHeader.findViewById(R.id.mon);
+        tuesday = calendarHeader.findViewById(R.id.tue);
+        wednesday = calendarHeader.findViewById(R.id.wed);
+        thursday = calendarHeader.findViewById(R.id.thu);
+        friday = calendarHeader.findViewById(R.id.fri);
+        saterday = calendarHeader.findViewById(R.id.sat);
+
+        setLanguage();
 
 
         if(this.date != null) {
             yearText = view.findViewById(R.id.calendar_year_text);
             monthText = view.findViewById(R.id.calendar_month_text);
-
-//            viewPager = view.findViewById(R.id.calendar_viewpager);
-//            viewPager.setAdapter(new CalendarPagerAdapter(this.date));
-//            viewPager.setCurrentItem(findIndex());
             setCalendarSelectLayout();
-
-//            viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-//                @Override
-//                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//
-//                }
-//
-//                @Override
-//                public void onPageSelected(int position) {
-//                    if(position < findIndex()) {
-//                        date = date.minusMonths(1);
-//                    } else if(position > findIndex()) {
-//                        date = date.plusMonths(1);
-//                    }
-//                }
-//
-//                @Override
-//                public void onPageScrollStateChanged(int state) {
-//                    if(state == ViewPager.SCROLL_STATE_IDLE) {
-//                        viewPager.setCurrentItem(findIndex());
-//                        setCalendarSelectLayout();
-//                    }
-//                }
-//            });
 
             calendarSelectView = view.findViewById(R.id.calendar_select_view); // number picker부분
             calendarSelectView.setOnClickListener(new View.OnClickListener() { // 검은배경 클릭시
@@ -198,7 +194,6 @@ public class PlannerView  extends ConstraintLayout {
                 @Override
                 public void onClick(View view) {
                     date = date.minusMonths(1);
-//                    viewPager.setCurrentItem(findIndex());
                     recyclerView.setAdapter(new CalendarRecyclerViewAdapter(date.withDayOfMonth(1)));
                     setCalendarSelectLayout();
                 }
@@ -208,61 +203,11 @@ public class PlannerView  extends ConstraintLayout {
                 @Override
                 public void onClick(View view) {
                     date = date.plusMonths(1);
-//                    viewPager.setCurrentItem(findIndex());
                     recyclerView.setAdapter(new CalendarRecyclerViewAdapter(date.withDayOfMonth(1)));
                     setCalendarSelectLayout();
                 }
             });
-
             recyclerView.setAdapter(new CalendarRecyclerViewAdapter(date.withDayOfMonth(1)));
-
-        }
-
-    }
-
-
-    public class CalendarPagerAdapter extends PagerAdapter {
-        int size;
-        int maxYear = 2099;
-        int minYear = 2000;
-
-        LocalDate minDate;
-        LocalDate date;
-
-        public CalendarPagerAdapter(LocalDate localDate) {
-            minDate = new LocalDate(2000, 1, 1);
-            this.size = (maxYear - minYear + 1) * 12;
-            this.date = localDate.withDayOfMonth(1);
-        }
-
-
-
-        @SuppressLint("WrongConstant")
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            View view = LayoutInflater.from(context).inflate(R.layout.planner_recyclerview, null);
-
-            RecyclerView recyclerView = view.findViewById(R.id.calendar_recyclerview);
-
-            recyclerView.setLayoutManager(new GridLayoutManager(context, 7, LinearLayoutManager.VERTICAL, false));
-            recyclerView.setAdapter(new CalendarRecyclerViewAdapter(minDate.plusMonths(position)));
-            container.addView(view);
-            return view;
-        }
-
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            container.removeView((ConstraintLayout) object);
-        }
-
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return view == object;
-        }
-
-        @Override
-        public int getCount() {
-            return this.size;
         }
     }
 
@@ -306,33 +251,55 @@ public class PlannerView  extends ConstraintLayout {
             View.OnClickListener listener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    fileSaveNotifyListener = new FileSaveNotifyListener() {
+                    if(viewHolder.eventExist.getVisibility() == View.VISIBLE){
+                        takePictureDialog = new TakePictureDialog(context, fileSaveNotifyListener);
+                        takePictureDialog.setDate(viewHolder.getLocalDate());
+                        takePictureDialog.show();
+                        return;
+                    }
+                    FileDestinationListener fileDestinationListener = new FileDestinationListener() {
                         @Override
-                        public int describeContents() {
-                            return 0;
+                        public void doGallery() {
+                            goToAlbum();
+                            selectedDate = viewHolder.localDate;
                         }
 
                         @Override
-                        public void writeToParcel(Parcel parcel, int i) {
+                        public void doCamera() {
+                            fileSaveNotifyListener = new FileSaveNotifyListener() {
+                                @Override
+                                public int describeContents() {
+                                    return 0;
+                                }
 
-                        }
+                                @Override
+                                public void writeToParcel(Parcel parcel, int i) {
 
-                        @Override
-                        public void notifyDatasetChanged() {
-                            viewHolder.eventExist.setVisibility(View.VISIBLE);
-//                            takePictureDialog.dismiss();
-//                            takePictureDialog = new TakePictureDialog(context, this);
-//                            takePictureDialog.setDate(viewHolder.getLocalDate());
-//                            takePictureDialog.show();
+                                }
+
+                                @Override
+                                public void notifyDatasetChanged() {
+                                    viewHolder.eventExist.setVisibility(View.VISIBLE);
+                                }
+                            };
+                            takePictureDialog = new TakePictureDialog(context, fileSaveNotifyListener);
+                            takePictureDialog.setDate(viewHolder.getLocalDate());
+                            takePictureDialog.show();
                         }
                     };
-                    takePictureDialog = new TakePictureDialog(context, fileSaveNotifyListener);
-                    takePictureDialog.setDate(viewHolder.getLocalDate());
-                    takePictureDialog.show();
-//                    Intent intent = new Intent(context, TakePictureActivity.class);
-////                    intent.putExtra("fileSaveNotifyListener", fileSaveNotifyListener);
-//                    intent.putExtra("date", viewHolder.getLocalDate().toString("yyyyMMdd"));
-//                    context.startActivity(intent);
+
+                    SharedPreferences sharedPreferences = context.getSharedPreferences("setting", Context.MODE_PRIVATE);
+                    int language = sharedPreferences.getInt("language", 0);
+                    SelectDialog selectDialog = new SelectDialog(context, fileDestinationListener, language);
+                    selectDialog.show();
+                    Display display = ((Activity)context).getWindowManager().getDefaultDisplay();
+                    Point size = new Point();
+                    display.getSize(size);
+
+                    Window window = selectDialog.getWindow();
+                    int x = (int)(size.x * 0.8f);
+                    int y = (int)(size.y * 0.35f);
+                    window.setLayout(x,y);
                 }
             };
 
@@ -419,10 +386,6 @@ public class PlannerView  extends ConstraintLayout {
                 return this.localDate;
             }
         }
-        public String convertFileName(LocalDate date){
-            String str = date.toString("yyyyMMdd");
-            return str;
-        }
 
     }
 
@@ -433,14 +396,15 @@ public class PlannerView  extends ConstraintLayout {
         return todays[0] == dates[0] && todays[1] == dates[1] && todays[2] == dates[2];
     }
 
-    private int findIndex() {
-        return ((this.date.getYear() - 2000) * 12) + this.date.getMonthOfYear() - 1;
-    }
 
     private void setCalendarSelectLayout() {
         yearText.setText(date.year().getAsText());
-        monthText.setText(String.valueOf(date.monthOfYear().get()));
-
+        if(isEnglishCalendar){
+            monthText.setText(getMonthString(date.monthOfYear().get()));
+        }
+        else{
+            monthText.setText(String.valueOf(date.monthOfYear().get()));
+        }
         isExistToday = isExistToday(date);
 
         if(!isExistToday) {
@@ -448,5 +412,120 @@ public class PlannerView  extends ConstraintLayout {
         } else {
             todayButton.setVisibility(View.GONE);
         }
+    }
+
+
+    public String convertFileName(LocalDate date){
+        String str = date.toString("yyyyMMdd");
+        return str;
+    }
+
+    private void setLanguage(){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("setting", Context.MODE_PRIVATE);
+        int language = sharedPreferences.getInt("language", 0);
+        switch(language){
+            case 0:
+                yearLiteral.setVisibility(View.GONE);
+                monthLiteral.setVisibility(View.GONE);
+                isEnglishCalendar = true;
+                monday.setText("Mon");
+                tuesday.setText("Tue");
+                wednesday.setText("Wed");
+                thursday.setText("Thu");
+                friday.setText("Fri");
+                saterday.setText("Sat");
+                sunday.setText("Sun");
+                break;
+            case 1:
+                yearLiteral.setVisibility(View.VISIBLE);
+                monthLiteral.setVisibility(View.VISIBLE);
+                yearLiteral.setText("년");
+                monthLiteral.setText("월");
+                monday.setText("월");
+                tuesday.setText("화");
+                wednesday.setText("수");
+                thursday.setText("목");
+                friday.setText("금");
+                saterday.setText("토");
+                sunday.setText("일");
+                break;
+            case 2:
+                yearLiteral.setVisibility(View.VISIBLE);
+                monthLiteral.setVisibility(View.VISIBLE);
+                yearLiteral.setText("年");
+                monthLiteral.setText("月");
+                monday.setText("月");
+                tuesday.setText("火");
+                wednesday.setText("水");
+                thursday.setText("木");
+                friday.setText("金");
+                saterday.setText("土");
+                sunday.setText("日");
+        }
+    }
+
+    private String getMonthString(int month){
+        switch (month){
+            case 1:
+                return "January";
+            case 2:
+                return "February";
+            case 3:
+                return "March";
+            case 4:
+                return "April";
+            case 5:
+                return "May";
+            case 6:
+                return "June";
+            case 7:
+                return "July";
+            case 8:
+                return "August";
+            case 9:
+                return "September";
+            case 10:
+                return "October";
+            case 11:
+                return "November";
+            case 12:
+                return "December";
+        }
+        return null;
+    }
+
+
+    private void goToAlbum() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType(MediaStore.Images.Media.CONTENT_TYPE);
+        ((Activity)context).startActivityForResult(intent, PICK_FROM_ALBUM);
+    }
+
+    public void saveGalleryImage(String filePath){
+        File source = new File(filePath);
+        File file = new File(Environment.getExternalStorageDirectory()+"/Pictures/DailyCloset", convertFileName(selectedDate) + ".jpg");
+
+        FileInputStream fis = null;
+        FileOutputStream fos = null;
+        try {
+            fis = new FileInputStream(source);
+            fos = new FileOutputStream(file) ;
+            byte[] b = new byte[4096];
+            int cnt = 0;
+            while((cnt=fis.read(b)) != -1){
+                fos.write(b, 0, cnt);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally{
+            try {
+                fis.close();
+                fos.close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
     }
 }

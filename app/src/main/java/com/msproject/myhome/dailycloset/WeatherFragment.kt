@@ -17,6 +17,7 @@ import android.location.Geocoder
 import android.os.AsyncTask
 import android.util.Log
 import android.view.*
+import com.bumptech.glide.Glide
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
@@ -27,16 +28,15 @@ import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 import java.io.Reader
-import java.io.Serializable
 import java.lang.IndexOutOfBoundsException
 import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
 
-private const val ARG_PARAM1 = "menu"
+private const val ARG_PARAM1 = "location"
 
 
-class WeatherFragment : Fragment() {
+class WeatherFragment() : Fragment() {
 
     lateinit var backgroundImageView:ImageView
     lateinit var weatherImageView: ImageView
@@ -48,12 +48,11 @@ class WeatherFragment : Fragment() {
     lateinit var locationTextView: TextView
     lateinit var minTempTextView: TextView
     lateinit var maxTempTextView: TextView
-    private val isAccessFineLocation = false
-    private val isAccessCoarseLocation = false
-    private var gps: GPSInfo? = null
+    lateinit var loadingImageView:ImageView
     private lateinit var date:LocalDate
     private lateinit var myBottomNavigationInteractionListener: BottomNavigationInteractionListener
     lateinit var mAdView : AdView
+    var myLocation:MyLocation? = null
 
     fun setBottomNavigationInteractionListener(myBottomNavigationInteractionListener: BottomNavigationInteractionListener){
         this.myBottomNavigationInteractionListener = myBottomNavigationInteractionListener
@@ -62,9 +61,9 @@ class WeatherFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        arguments?.let {
-////            myBottomNavigationInteractionListener = it.getSerializable(ARG_PARAM1) as BottomNavigationInteractionListener
-////        }
+        arguments?.let {
+            myLocation = it.getSerializable(ARG_PARAM1) as MyLocation?
+        }
     }
 
 
@@ -85,84 +84,20 @@ class WeatherFragment : Fragment() {
         locationTextView = view.findViewById(R.id.location_text)
         minTempTextView = view.findViewById(R.id.min_temp)
         maxTempTextView = view.findViewById(R.id.max_temp)
+        loadingImageView = view.findViewById(R.id.loading_image)
         date = LocalDate()
 
-        val myLocation = getGps()
-        setWeatherView(myLocation)
+        Glide.with(this).load(R.raw.loading).into(loadingImageView)
+        setLanguage()
+        setWeatherView(this.myLocation)
         getWeatherData(myLocation?.getLatitude(), myLocation?.getLongitude())
         MobileAds.initialize(context, "ca-app-pub-3136625326865731~3192081537")
         mAdView = view.findViewById(R.id.adView)
         val adRequest = AdRequest.Builder().build()
         mAdView.loadAd(adRequest)
-        Thread.sleep(500)
         return view
     }
 
-
-
-
-
-    private fun getGps(): MyLocation?{
-        gps = GPSInfo(context)
-        var myLocation: MyLocation? = null;
-        // GPS 사용유무 가져오기
-        if (gps!!.isGetLocation()) {
-            //GPSInfo를 통해 알아낸 위도값과 경도값
-            val latitude = gps!!.latitude
-            val longitude = gps!!.longitude
-
-            //Geocoder
-            val gCoder = Geocoder(context, Locale.getDefault())
-            var addr: List<Address>? = null
-            try {
-                addr = gCoder.getFromLocation(latitude, longitude, 10)
-                if(addr == null){
-                    Log.v("알림", "AddressLine(null)" + "\n")
-                    Toast.makeText(context, "주소정보 없음", Toast.LENGTH_LONG).show()
-                    return null
-                }
-                var locationString:String = "위치정보없음"
-                for(a:Address in addr){
-                    if(a.locality != null && a.locality.length > 0){
-                        locationString = a.locality
-                        return MyLocation(latitude, longitude, locationString)
-                    }
-                }
-//                val a = addr!!.get(0)
-//                if(a != null && a.locality != null){
-//                    locationString = a.locality
-//                }
-                myLocation = MyLocation(latitude, longitude, locationString)
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }catch (e: IndexOutOfBoundsException){
-                e.printStackTrace()
-            }
-            if (addr != null) {
-                if (addr.size == 0) {
-                    Toast.makeText(context, "주소정보를 찾을 수 없습니다.", Toast.LENGTH_LONG).show()
-                }
-            }
-        } else {
-            // GPS 를 사용할수 없으므로
-            gps!!.showSettingsAlert()
-        }
-        return myLocation
-    }
-    inner class MyLocation(latitude:Double, longitude:Double, locality:String){
-        private var locality = locality
-        private var latitude = latitude
-        private var longitude = longitude
-        fun getLocality():String{
-            return locality;
-        }
-        fun getLatitude():Double{
-            return latitude
-        }
-        fun getLongitude():Double{
-            return longitude
-        }
-    }
     fun setWeatherView(myLocation: MyLocation?){
         if(myLocation == null){
 
@@ -249,87 +184,127 @@ class WeatherFragment : Fragment() {
                     rainTextView.setText(humidity+"%")//이미지변경필요(습도)
                     cloudTextView.setText(cloud+"%")
                     weatherTextView.setText(description)
-                    minTempTextView.setText("최저기온: " + minTemp + "℃")
-                    maxTempTextView.setText("최고기온: " + maxTemp + "℃")
+
+                    minTempTextView.setText(minTempTextView.text.toString() + minTemp + "℃")
+                    maxTempTextView.setText(maxTempTextView.text.toString() + maxTemp + "℃")
                     setIconImage(description)
+                    loadingImageView.visibility = View.GONE
+                    weatherImageView.visibility = View.VISIBLE
                 }
             }
         }
 
         fun setIconImage(description:String){
+            try{
+                when(description.toLowerCase()) {
+                    "sky is clear" -> {
+                        weatherImageView.setImageResource(R.drawable.ic_sun)
+                        backgroundImageView.setImageResource(R.drawable.sunny1)
+                        myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_sun)
+                    }
+                    "clear sky" ->{
+                        weatherImageView.setImageResource(R.drawable.ic_sun)
+                        backgroundImageView.setImageResource(R.drawable.sunny1)
+                        myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_sun)
+                    }
+                    "few clouds" -> {
+                        weatherImageView.setImageResource(R.drawable.ic_sun)
+                        backgroundImageView.setImageResource(R.drawable.sunny4)
+                        myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_sun)
+                    }
+                    "scattered clouds" -> {
+                        weatherImageView.setImageResource(R.drawable.ic_cloud_sun)
+                        backgroundImageView.setImageResource(R.drawable.sunny2)
+                        myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_cloud_sun)
 
-            when(description.toLowerCase()) {
-                "sky is clear" -> {
-                    weatherImageView.setImageResource(R.drawable.ic_sun)
-                    backgroundImageView.setImageResource(R.drawable.sunny1)
-                    myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_sun)
+                    }
+                    "broken clouds" -> {
+                        weatherImageView.setImageResource(R.drawable.ic_cloud)
+                        backgroundImageView.setImageResource(R.drawable.sunny3_cloud)
+                        myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_cloud)
+                    }
+                    "overcast clouds" -> {
+                        weatherImageView.setImageResource(R.drawable.ic_clouds)
+                        backgroundImageView.setImageResource(R.drawable.sunny3_cloud)
+                        myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_clouds)
+                    }
+                    "shower rain" -> {
+                        weatherImageView.setImageResource(R.drawable.ic_umbrella_drizzle)
+                        backgroundImageView.setImageResource(R.drawable.rain4)
+                        myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_umbrella_drizzle)
+                    }
+                    "light rain" -> {
+                        weatherImageView.setImageResource(R.drawable.ic_umbrella_drizzle)
+                        backgroundImageView.setImageResource(R.drawable.rain2)
+                        myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_umbrella_drizzle)
+                    }
+                    "moderate rain" -> {
+                        weatherImageView.setImageResource(R.drawable.ic_umbrella_drizzle)
+                        backgroundImageView.setImageResource(R.drawable.rain3)
+                        myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_umbrella_drizzle)
+                    }
+                    "rain" ->{
+                        weatherImageView.setImageResource(R.drawable.ic_umbrella_drizzle)
+                        backgroundImageView.setImageResource(R.drawable.rain1)
+                        myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_umbrella_drizzle)
+                    }
+                    "thunderstorm" -> {
+                        weatherImageView.setImageResource(R.drawable.ic_cloud_lightning)
+                        backgroundImageView.setImageResource(R.drawable.rain1)
+                        myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_cloud_lightning)
+                    }
+                    "snow" -> {
+                        weatherImageView.setImageResource(R.drawable.ic_wi_snow_wind)
+                        backgroundImageView.setImageResource(R.drawable.snow)
+                        myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_wi_snow_wind)
+                    }
+                    "mist" -> {
+                        weatherImageView.setImageResource(R.drawable.ic_cloud_sun)
+                        backgroundImageView.setImageResource(R.drawable.sunny2)
+                        myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_cloud_sun)
+                    }
+                    "fog" -> {
+                        weatherImageView.setImageResource(R.drawable.ic_cloud)
+                        backgroundImageView.setImageResource(R.drawable.sunny3_cloud)
+                        myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_cloud)
+                    }
+                    else -> {
+                        if(description.toLowerCase().contains("rain")){
+                            weatherImageView.setImageResource(R.drawable.ic_umbrella_drizzle)
+                            backgroundImageView.setImageResource(R.drawable.rain1)
+                            myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_umbrella_drizzle)
+                        }
+                        else{
+                            weatherImageView.setImageResource(R.drawable.ic_sun)
+                            backgroundImageView.setImageResource(R.drawable.sunny1)
+                            myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_sun)
+                        }
+                    }
                 }
-                "clear sky" ->{
-                    weatherImageView.setImageResource(R.drawable.ic_sun)
-                    backgroundImageView.setImageResource(R.drawable.sunny1)
-                    myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_sun)
-                }
-                "few clouds" -> {
-                    weatherImageView.setImageResource(R.drawable.ic_sun)
-                    backgroundImageView.setImageResource(R.drawable.sunny4)
-                    myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_sun)
-                }
-                "scattered clouds" -> {
-                    weatherImageView.setImageResource(R.drawable.ic_cloud_sun)
-                    backgroundImageView.setImageResource(R.drawable.sunny2)
-                    myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_cloud_sun)
+            }catch(e:Exception){
+                e.printStackTrace()
+            }catch(e:Error){
+                e.printStackTrace()
+            }
 
-                }
-                "broken clouds" -> {
-                    weatherImageView.setImageResource(R.drawable.ic_cloud)
-                    backgroundImageView.setImageResource(R.drawable.sunny3_cloud)
-                    myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_cloud)
-                }
-                "overcast clouds" -> {
-                    weatherImageView.setImageResource(R.drawable.ic_clouds)
-                    backgroundImageView.setImageResource(R.drawable.sunny3_cloud)
-                    myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_clouds)
-                }
-                "shower rain" -> {
-                    weatherImageView.setImageResource(R.drawable.ic_umbrella_drizzle)
-                    backgroundImageView.setImageResource(R.drawable.rain4)
-                    myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_umbrella_drizzle)
-                }
-                "light rain" -> {
-                    weatherImageView.setImageResource(R.drawable.ic_umbrella_drizzle)
-                    backgroundImageView.setImageResource(R.drawable.rain2)
-                    myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_umbrella_drizzle)
-                }
-                "moderate rain" -> {
-                    weatherImageView.setImageResource(R.drawable.ic_umbrella_drizzle)
-                    backgroundImageView.setImageResource(R.drawable.rain3)
-                    myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_umbrella_drizzle)
-                }
-                "rain" ->{
-                    weatherImageView.setImageResource(R.drawable.ic_umbrella_drizzle)
-                    backgroundImageView.setImageResource(R.drawable.rain1)
-                    myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_umbrella_drizzle)
-                }
-                "thunderstorm" -> {
-                    weatherImageView.setImageResource(R.drawable.ic_cloud_lightning)
-                    backgroundImageView.setImageResource(R.drawable.rain1)
-                    myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_cloud_lightning)
-                }
-                "snow" -> {
-                    weatherImageView.setImageResource(R.drawable.ic_wi_snow_wind)
-                    backgroundImageView.setImageResource(R.drawable.snow)
-                    myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_wi_snow_wind)
-                }
-                "mist" -> {
-                    weatherImageView.setImageResource(R.drawable.ic_cloud_sun)
-                    backgroundImageView.setImageResource(R.drawable.sunny2)
-                    myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_cloud_sun)
-                }
-                "fog" -> {
-                    weatherImageView.setImageResource(R.drawable.ic_cloud)
-                    backgroundImageView.setImageResource(R.drawable.sunny3_cloud)
-                    myBottomNavigationInteractionListener.setNavigationIcon(R.drawable.ic_cloud)
-                }
+        }
+    }
+
+    private fun setLanguage(){
+        val sharedPreferences = context?.getSharedPreferences("setting", Context.MODE_PRIVATE)
+        val language = sharedPreferences?.getInt("language", 0)
+        when(language){
+            0 -> {
+                minTempTextView.text = getString(R.string.weather_fragment_min_temp_EN)
+                maxTempTextView.text = getString(R.string.weather_fragment_max_temp_EN)
+            }
+            1 -> {
+                minTempTextView.text = getString(R.string.weather_fragment_min_temp_KR)
+                maxTempTextView.text = getString(R.string.weather_fragment_max_temp_KR)
+            }
+            2 -> {
+                minTempTextView.text = getString(R.string.weather_fragment_min_temp_JP)
+                maxTempTextView.text = getString(R.string.weather_fragment_max_temp_JP)
             }
         }
     }
@@ -346,9 +321,11 @@ class WeatherFragment : Fragment() {
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance() =
+        fun newInstance(myLocation:MyLocation?) =
             WeatherFragment().apply {
-                arguments = Bundle().apply {  }
+                arguments = Bundle().apply {
+                    putSerializable(ARG_PARAM1, myLocation)
+                }
             }
 
     }

@@ -135,6 +135,9 @@ public class Preview2 {
         };
     }
     protected void stopBackgroundThread() {
+        if(mBackgroundThread == null){
+            return;
+        }
         mBackgroundThread.quitSafely();
         try {
             mBackgroundThread.join();
@@ -181,6 +184,11 @@ public class Preview2 {
             if(!path.exists()){
                 path.mkdir();
             }
+            if(file.exists()){
+                if(file.delete()){
+                    Log.d("파일삭제==","성공");
+                }
+            }
             ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
                 @Override
                 public void onImageAvailable(ImageReader reader) {
@@ -203,6 +211,7 @@ public class Preview2 {
                     }
                 }
                 private void save(byte[] bytes) throws IOException {
+                    //덮어쓰기 ?
                     OutputStream output = null;
                     try {
                         output = new FileOutputStream(file);
@@ -248,8 +257,11 @@ public class Preview2 {
     protected void createCameraPreview() {
         try {
             SurfaceTexture texture = textureView.getSurfaceTexture();
-//            assert texture != null;
-//            texture.setDefaultBufferSize(imageDimension.getWidth(), imageDimension.getHeight());
+            if(cameraDevice == null){
+                Log.e(TAG, "cannot create camera preview!!");
+                onPause();
+                return;
+            }
             Surface surface = new Surface(texture);
             captureRequestBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
             captureRequestBuilder.addTarget(surface);

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+    <TextView
+            android:id="@+id/title_tv"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.6"
+            android:text="수행할 작업을 선택해주세요."
+            android:textSize="16sp"
+            android:gravity="center|left"
+            android:padding="16dp"
+            android:fontFamily="@font/nanumbarungothic"
+            android:background="@drawable/textlines"/>
+    <TextView
+            android:id="@+id/gallery_tv"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="갤러리에서 사진 가져오기"
+            android:textSize="16sp"
+            android:padding="24dp"
+            android:gravity="center"
+            android:fontFamily="@font/nanumbarungothic"
+            android:background="@drawable/textlines"/>
+    <TextView
+            android:id="@+id/takepicture_tv"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:text="카메라 앱으로 사진 찍기"
+            android:textSize="16sp"
+            android:padding="24dp"
+            android:gravity="center"
+            android:fontFamily="@font/nanumbarungothic"
+            android:background="@drawable/textlines"/>
+</LinearLayout>

@@ -3,6 +3,7 @@ package com.msproject.myhome.dailycloset;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -66,7 +67,7 @@ public class TakePictureDialog extends Dialog {
         dateTextView = findViewById(R.id.date_text);
         rotate_bt = findViewById(R.id.rotate_bt);
         alert_text = findViewById(R.id.alert_text);
-
+        setLanguege();
         file = new File(Environment.getExternalStorageDirectory()+"/Pictures/DailyCloset", convertFileName() + ".jpg");
         if(!file.canRead()){
             isExist = false;
@@ -77,6 +78,7 @@ public class TakePictureDialog extends Dialog {
             startImageView();
         }
         setControllView();
+        setLanguege();
     }
 
     public String convertFileName(){
@@ -118,7 +120,9 @@ public class TakePictureDialog extends Dialog {
                     rotate_bt.setVisibility(View.GONE);
                     alert_text.setVisibility(View.GONE);
                     findViewById(R.id.close_container).setVisibility(View.VISIBLE);
-                    fileSaveNotifyListener.notifyDatasetChanged();
+                    if(fileSaveNotifyListener != null) {
+                        fileSaveNotifyListener.notifyDatasetChanged();
+                    }
                 }
             }
         });
@@ -290,5 +294,28 @@ public class TakePictureDialog extends Dialog {
             }
         }
         return null;
+    }
+
+    private void setLanguege(){
+        SharedPreferences sharedPreferences = context.getSharedPreferences("setting", Context.MODE_PRIVATE);
+        int language = sharedPreferences.getInt("language", 0);
+        switch(language){
+            case 0:
+                alert_text.setText(context.getString(R.string.dialog_take_picture_alert_EN));
+                retakeButton.setText(context.getString(R.string.dialog_take_picture_retake_EN));
+                closeButton.setText(context.getString(R.string.dialog_take_picture_close_EN));
+                break;
+            case 1:
+                alert_text.setText(context.getString(R.string.dialog_take_picture_alert_KR));
+                retakeButton.setText(context.getString(R.string.dialog_take_picture_retake_KR));
+                closeButton.setText(context.getString(R.string.dialog_take_picture_close_KR));
+                break;
+            case 2:
+                alert_text.setText(context.getString(R.string.dialog_take_picture_alert_JP));
+                retakeButton.setText(context.getString(R.string.dialog_take_picture_retake_JP));
+                closeButton.setText(context.getString(R.string.dialog_take_picture_close_JP));
+                break;
+        }
+
     }
 }
